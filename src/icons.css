@@ -1,0 +1,52 @@
+span.icon {
+  display: inline-flex;
+  justify-content: center;
+  width: 40px;
+  font-size: 40px;
+  line-height: 40px;
+}
+
+span.icon.map-w {
+  background-color: darkturquoise;
+  box-shadow: 0 0 4px 4px darkturquoise;
+  border-radius: 8px;
+}
+
+span.icon.map-u {
+  background-color: #242424;
+  box-shadow: 0 0 16px 12px #242424;
+}
+
+span.icon.map-p {
+  color: black;
+}
+
+span.icon.map-p::after {
+  content: "\265f";
+}
+
+span.icon.map-f::after {
+  /* content: '\1f33e'; */
+  content: "\00A0";
+}
+
+span.icon.map-t::after {
+  content: "\1f332";
+}
+
+span.icon.map-w::after {
+  content: "\00A0";
+}
+
+span.icon.map-c::after {
+  content: "\1f3f0";
+}
+
+span.icon.map-u::after {
+  /* content: "\1f32b"; */
+  content: "\00A0";
+}
+
+span.icon.enc-dragon::after {
+  content: "\1f409";
+}
