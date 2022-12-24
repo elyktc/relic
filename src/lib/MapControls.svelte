@@ -63,7 +63,7 @@
 
 <style>
   button {
-    width: 100px;
+    width: 80px;
     padding: 10px;
     margin: 10px;
     border-radius: 25px;

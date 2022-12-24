@@ -169,8 +169,8 @@ function matrixHeight(m) {
 
 function matrixWidth(m) {
   m ??= matrix ?? [];
-  let widths = m.map((r) => r.length).sort((a, b) => parseInt(a) < parseInt(b));
-  return widths[0];
+  let widths = m.map((r) => r.length).sort((a, b) => a - b);
+  return widths[widths.length - 1];
 }
 
 function move(p) {

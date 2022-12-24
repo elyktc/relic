@@ -52,6 +52,6 @@
     overflow: hidden;
     border-radius: 20px;
     border: 1px solid white;
-    width:360px;
+    width: 360px;
   }
 </style>
