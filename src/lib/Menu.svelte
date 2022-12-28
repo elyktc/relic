@@ -1,5 +1,5 @@
 <script>
-  import { showMapScreen, screenFade } from "../modules/screens";
+  import { showMapScreen, screenFade, showTitleScreen } from "../modules/screens";
   import map from "../modules/map";
   import user from "../modules/user";
 </script>
@@ -20,6 +20,12 @@
       </div>
     </div>
     <div class="row">
+      <div class="col label">Gold</div>
+      <div class="col value">
+        {$user.gp}
+      </div>
+    </div>
+    <div class="row">
       <div class="col label">Steps</div>
       <div class="col value">
         {new Intl.NumberFormat().format($user.steps)}
@@ -33,6 +39,7 @@
     </div>
   </div>
   <div class="ctrls">
+    <button on:click={showTitleScreen} style:background-color="maroon">Reset</button>
     <button on:click={showMapScreen}>Back</button>
   </div>
 </div>

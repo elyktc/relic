@@ -1,8 +1,13 @@
 <script>
   import MapCtrls from "./components/MapCtrls.svelte";
-  import { showEncScreen, screenFade } from "../modules/screens";
+  import {
+    showEncScreen,
+    showCityScreen,
+    screenFade,
+  } from "../modules/screens";
   import map, { TERRAINS, init as initMap } from "../modules/map";
   import user from "../modules/user";
+  import { clearCities } from "../modules/cities";
   import { rand } from "../modules/util";
   import { ENCFREQ } from "../modules/constants";
 
@@ -24,14 +29,19 @@
       $user.steps++;
       drawMap(map.miniMap());
       let t = map.location().terrain;
-      if (t != TERRAINS.CITY && rand(getEncFreq()) == 1) {
+      if (t == TERRAINS.CITY) {
+        showCityScreen();
+      } else if (rand(getEncFreq()) == 1) {
         showEncScreen();
       }
     }
   }
 
   function init(node) {
-    if (!$user.steps) initMap();
+    if (!$user.steps) {
+      initMap();
+      clearCities();
+    }
     drawMap(map.miniMap());
   }
 

@@ -44,6 +44,7 @@
 
 <style>
   .toast-wrapper-1 {
+    font-family: "Lato", Helvetica, Arial, sans-serif;
     font-size: 20px;
     position: relative;
     display: flex;

@@ -3,6 +3,7 @@
   import Map from "./lib/Map.svelte";
   import Menu from "./lib/Menu.svelte";
   import Enc from "./lib/Enc.svelte";
+  import City from "./lib/City.svelte";
   import Toast from "./lib/components/Toast.svelte";
   import { screenStore, SCREENS } from "./modules/screens";
   import toast from "./modules/toast";
@@ -32,6 +33,8 @@
     <Menu />
   {:else if screen == SCREENS.ENC}
     <Enc />
+  {:else if screen == SCREENS.CITY}
+    <City />
   {/if}
 </main>
 
@@ -39,6 +42,7 @@
   :global(.view) {
     height: 360px;
     width: 360px;
+    font-family: "Averia Libre";
   }
 
   :global(.ctrls) {

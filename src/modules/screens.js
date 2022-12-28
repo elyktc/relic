@@ -1,12 +1,14 @@
+import { wait } from "./util";
+import { SCREEN_FADE_DURATION } from "./constants";
 import { writable } from "svelte/store";
 import { fade } from "svelte/transition";
-import { SCREEN_FADE_DURATION } from "./constants";
 
 const SCREENS = {
   TITLE: 0,
   MAP: 1,
   MENU: 2,
   ENC: 3,
+  CITY: 4,
 };
 
 const screenStore = writable(SCREENS.TITLE);
@@ -27,6 +29,15 @@ function showTitleScreen() {
   screenStore.set(SCREENS.TITLE);
 }
 
+function showCityScreen() {
+  screenStore.set(SCREENS.CITY);
+}
+
+function showBlankScreen(duration, callback) {
+  screenStore.set(undefined);
+  wait(duration, callback);
+}
+
 function screenFade(node) {
   return fade(node, { duration: SCREEN_FADE_DURATION });
 }
@@ -39,4 +50,6 @@ export {
   showMenuScreen,
   showEncScreen,
   showTitleScreen,
+  showCityScreen,
+  showBlankScreen,
 };

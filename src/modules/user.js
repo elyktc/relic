@@ -14,6 +14,7 @@ function createUser() {
   let str = rand(USER_STR_MAX, USER_STR_MIN);
   let maxhp = hp;
   let steps = 0;
+  let gp = 0;
 
   return {
     name,
@@ -21,6 +22,7 @@ function createUser() {
     maxhp,
     str,
     steps,
+    gp,
   };
 }
 

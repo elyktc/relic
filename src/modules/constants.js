@@ -19,3 +19,8 @@ export const CITYFREQ = 200;
 export const ENCFREQ = 10;
 
 export const SCREEN_FADE_DURATION = 200;
+
+export const VARIANCE = 0.1;
+
+export const INN_MIN = 5;
+export const INN_MAX = 100;

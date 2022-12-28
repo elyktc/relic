@@ -1,9 +1,9 @@
 <script>
   import { showMapScreen, screenFade } from "../modules/screens";
-  import user, { init as userInit } from "../modules/user";
+  import user, { init as initUser } from "../modules/user";
 
   function init(node) {
-    userInit();
+    initUser();
     node.focus();
   }
 </script>
@@ -22,6 +22,10 @@
 </div>
 
 <style>
+  .view {
+    font-family: "Lato", Helvetica, Arial, sans-serif;
+  }
+
   input {
     font-size: 28px;
     height: 50px;

@@ -1,17 +1,17 @@
 <script>
   import EncImgs from "./components/EncImgs.svelte";
   import EncInfo from "./components/EncInfo.svelte";
-  import { rand } from "../modules/util";
+  import { rand, vary } from "../modules/util";
   import {
     showMapScreen,
     screenFade,
     showTitleScreen,
   } from "../modules/screens";
   import user from "../modules/user";
-  import enc, { init as encInit } from "../modules/enc";
+  import enc, { init as initEnc } from "../modules/enc";
   import toast from "../modules/toast";
   import { wait } from "../modules/util";
-  import { ENC_OUT_DURATION } from "../modules/constants";
+  import { ENC_OUT_DURATION, VARIANCE } from "../modules/constants";
 
   function fight() {
     showFight = false;
@@ -35,25 +35,21 @@
   }
 
   function damageUser(amount) {
-    let dmg = calcDmg(amount);
+    let dmg = vary(amount);
     $user.hp -= dmg;
     toast.show(`${dmg}`, "user");
   }
 
   function damageEnc(amount) {
-    let dmg = calcDmg(amount);
+    let dmg = vary(amount);
     $enc.hp -= dmg;
     toast.show(`${dmg}`, "enc");
   }
 
-  function calcDmg(amount) {
-    let diff = Math.ceil(Math.abs(amount * 0.1));
-    return rand(amount + diff, amount - diff);
-  }
-
   function victory() {
     wait(ENC_OUT_DURATION, () => {
-      toast.persist(`Victory!`);
+      toast.persist(`Got ${$enc.gp} gold!`);
+      $user.gp += $enc.gp;
       showBack = true;
     });
   }
@@ -66,19 +62,20 @@
   }
 
   function init(node) {
-    encInit();
+    initEnc();
     //toast.show(`Encountered a ${$enc.name}!`);
     showFight = false;
     showBack = false;
     showRestart = false;
-    setTimeout(() => {
+    wait(500, () => {
       showFight = true;
-    }, 500);
+    });
   }
 
   let showFight;
   let showBack;
   let showRestart;
+  let gp;
 </script>
 
 <div transition:screenFade>

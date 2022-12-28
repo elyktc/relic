@@ -38,7 +38,7 @@ function generateMatrix(size, x, y) {
     lastCityElapsed = 0;
     explored = 0;
   }
-  setCellTerrain(x2, y2);
+  setCellTerrain(x2, y2, TERRAINS.CITY);
   for (let i = 1; i < size; i++) {
     let j = i % 2 == 0 ? i : -i;
     x2 += j;
@@ -221,6 +221,10 @@ function location() {
   return {
     x: posX,
     y: posY,
+    abs: {
+      x: posX - originX,
+      y: posY - originY,
+    },
     terrain: getCellTerrain(),
     distance: distance(),
   };
