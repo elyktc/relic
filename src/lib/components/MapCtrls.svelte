@@ -1,4 +1,5 @@
 <script>
+  import { showMenuScreen } from "../../modules/screens";
   import { createEventDispatcher } from "svelte";
 
   const dispatch = createEventDispatcher();
@@ -42,7 +43,7 @@
   }
 </script>
 
-<div style:margin="20px">
+<div class="ctrls">
   <div>
     <button on:click={moveNW}>NW</button>
     <button on:click={moveN}>N</button>
@@ -50,7 +51,7 @@
   </div>
   <div>
     <button on:click={moveW}>W</button>
-    <button style:visibility="hidden">Menu</button>
+    <button on:click={showMenuScreen}>Menu</button>
     <button on:click={moveE}>E</button>
   </div>
   <div>
@@ -62,10 +63,4 @@
 <svelte:window on:keydown={handleKeydown} />
 
 <style>
-  button {
-    width: 80px;
-    padding: 10px;
-    margin: 10px;
-    border-radius: 25px;
-  }
 </style>

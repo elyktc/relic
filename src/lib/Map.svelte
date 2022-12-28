@@ -1,57 +1,55 @@
 <script>
-  import * as util from "../util/util";
-  import * as map from "../util/map";
-  import { message } from "../util/hermes";
-  import MapControls from "../lib/MapControls.svelte";
-  import { createEventDispatcher } from "svelte";
+  import MapCtrls from "./components/MapCtrls.svelte";
+  import { showEncScreen, screenFade } from "../modules/screens";
+  import map, { TERRAINS, init as initMap } from "../modules/map";
+  import user from "../modules/user";
+  import { rand } from "../modules/util";
+  import { ENCFREQ } from "../modules/constants";
 
-  const dispatch = createEventDispatcher();
-
-  let mapHtml = "";
-
-  const ENCFREQ = 10;
-
-  function init(node) {
-    drawMap(map.newMap());
+  function drawMap(m) {
+    mapHtml = m.map((r) => r.map(icon).join("")).join("<br/>");
   }
 
   function icon(s) {
     return `<span class="icon map-${s}"></span>`;
   }
 
-  function drawMap(m) {
-    mapHtml = m.map((r) => r.map(icon).join("")).join("<br/>");
+  function getEncFreq() {
+    let t = map.location().terrain;
+    return t == TERRAINS.FOREST ? Math.ceil(ENCFREQ / 2) : ENCFREQ;
   }
 
   function move(p) {
     if (map.move(p)) {
+      $user.steps++;
       drawMap(map.miniMap());
       let t = map.location().terrain;
-      if (t != map.CITY && util.rand(getEncFreq()) == 1) {
-        //message(dispatch, "Encounter!", 500);
-        //initiateEnc();
+      if (t != TERRAINS.CITY && rand(getEncFreq()) == 1) {
+        showEncScreen();
       }
     }
   }
 
-  function getEncFreq() {
-    return map.location().terrain == map.FOREST
-      ? Math.ceil(ENCFREQ / 2)
-      : ENCFREQ;
+  function init(node) {
+    if (!$user.steps) initMap();
+    drawMap(map.miniMap());
   }
+
+  let mapHtml = "";
 </script>
 
-<div use:init>{@html mapHtml}</div>
-<MapControls on:move={(e) => move(e.detail)} />
+<div transition:screenFade>
+  <div class="view field" use:init>{@html mapHtml}</div>
+  <MapCtrls on:move={(e) => move(e.detail)} />
+</div>
 
 <style>
-  div {
+  .field {
     font-family: "Courier New", Courier, monospace;
-    background-color: lightgreen;
     word-break: keep-all;
     overflow: hidden;
+    background-color: lightgreen;
     border-radius: 20px;
     border: 1px solid white;
-    width: 360px;
   }
 </style>

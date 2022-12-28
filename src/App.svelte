@@ -1,47 +1,54 @@
 <script>
+  import Title from "./lib/Title.svelte";
   import Map from "./lib/Map.svelte";
+  import Menu from "./lib/Menu.svelte";
+  import Enc from "./lib/Enc.svelte";
+  import Toast from "./lib/components/Toast.svelte";
+  import { screenStore, SCREENS } from "./modules/screens";
+  import toast from "./modules/toast";
+  import { wait } from "./modules/util";
+  import { SCREEN_FADE_DURATION } from "./modules/constants";
 
-  let message = "";
-
-  function showMessage(m) {
-    message = m.message ?? "";
-    if (m.timeout) {
-      setTimeout(() => {
-        message = "";
-      }, m.timeout);
-    }
+  function init(node) {
+    screenStore.subscribe((value) => {
+      screen = undefined;
+      toast.clear();
+      wait(SCREEN_FADE_DURATION, () => {
+        screen = value;
+      });
+    });
   }
+
+  let screen;
 </script>
 
-<main>
-  <div class="col">
-    <div class="message row" style:visibility={message ? "visible" : "hidden"}>
-      {message}
-    </div>
-    <Map on:message={(e) => showMessage(e.detail)} />
-  </div>
+<main use:init>
+  <Toast />
+  {#if screen == SCREENS.TITLE}
+    <Title />
+  {:else if screen == SCREENS.MAP}
+    <Map />
+  {:else if screen == SCREENS.MENU}
+    <Menu />
+  {:else if screen == SCREENS.ENC}
+    <Enc />
+  {/if}
 </main>
 
 <style>
-  :root {
-    user-select: none;
+  :global(.view) {
+    height: 360px;
+    width: 360px;
   }
-  .row,
-  .col {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+
+  :global(.ctrls) {
+    margin-top: 20px;
   }
-  .col {
-    flex-direction: column;
-  }
-  .message {
-    margin: 15px 0;
-    width: 100%;
-    border: 2px solid white;
-    border-radius: 10px;
-    height: 60px;
-    font-size: 24px;
-    background-color: darkblue;
+
+  :global(.ctrls button) {
+    width: 85px;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 25px;
   }
 </style>

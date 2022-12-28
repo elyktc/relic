@@ -1,4 +1,11 @@
-import * as util from "../util/util";
+import { rand } from "./util";
+import {
+  CITYFREQ,
+  PLAINWEIGHT,
+  LOS,
+  MINIMAPSIZE,
+  STARTING_SIZE,
+} from "./constants";
 
 let matrix;
 let posX;
@@ -6,20 +13,17 @@ let posY;
 let originX;
 let originY;
 let initializing = true;
-let startingSize = 7;
-let miniMapSize = 9;
-let los = 2;
+let miniMapSize = MINIMAPSIZE;
+let los = LOS;
 let lastCityElapsed = 0;
+let explored = 0;
 
-const UNDISCOVERED = "u";
-const YOU = "p";
-const PLAIN = "f";
+const USER = "u";
+const FOG = "f";
+const PLAIN = "p";
 const FOREST = "t";
 const WATER = "w";
 const CITY = "c";
-const CITYFREQ = 200;
-const PLAINWEIGHT = 2;
-const TERRAIN = [PLAIN, FOREST];
 
 function generateMatrix(size, x, y) {
   size = Math.max(size, 1);
@@ -31,6 +35,8 @@ function generateMatrix(size, x, y) {
   if (initializing) {
     originX = posX;
     originY = posY;
+    lastCityElapsed = 0;
+    explored = 0;
   }
   setCellTerrain(x2, y2);
   for (let i = 1; i < size; i++) {
@@ -55,12 +61,12 @@ function trimMatrix(m, x, y, size) {
     for (let c = 0; c < size; c++) {
       let x2 = x - radius + r;
       let y2 = y - radius + c;
-      let v = (m[x2] && m[x2][y2]) ?? UNDISCOVERED;
+      let v = (m[x2] && m[x2][y2]) ?? FOG;
       miniMatrix[r] ??= [];
       miniMatrix[r][c] = v;
     }
   }
-  miniMatrix[radius][radius] = YOU;
+  miniMatrix[radius][radius] = USER;
   return miniMatrix;
 }
 
@@ -103,7 +109,7 @@ function setEmptyMatrixCells(setTerrain, size, x, y) {
       let x2 = r + i;
       let y2 = c + j;
       m[x2] ??= [];
-      let terrain = setTerrain ? getCellTerrain(x2, y2) : UNDISCOVERED;
+      let terrain = setTerrain ? getCellTerrain(x2, y2) : FOG;
       m[x2][y2] ??= terrain;
     }
   }
@@ -125,15 +131,16 @@ function getCellTerrain(x, y) {
   if (matrix && matrix[x] && matrix[x][y]) return matrix[x][y];
 
   let terrain;
-  if (util.rand(CITYFREQ) == 1 && util.rand(CITYFREQ) < lastCityElapsed++) {
+  if (rand(CITYFREQ) == 1 && rand(CITYFREQ) < lastCityElapsed++) {
     terrain = CITY;
     lastCityElapsed = 0;
   } else {
     let surroundingTerrain = getSurroundingTerrain(x, y);
-    let r = util.rand(surroundingTerrain.length + 1);
+    let r = rand(surroundingTerrain.length + 1);
     if (r >= surroundingTerrain.length) {
-      r = util.rand(TERRAIN.length + PLAINWEIGHT);
-      terrain = r >= TERRAIN.length ? PLAIN : TERRAIN[r];
+      let terrains = [PLAIN, FOREST];
+      r = rand(terrains.length + PLAINWEIGHT);
+      terrain = r >= terrains.length ? PLAIN : terrains[r];
     } else {
       terrain = surroundingTerrain[r];
     }
@@ -141,6 +148,10 @@ function getCellTerrain(x, y) {
 
   if (initializing && (terrain == CITY || terrain == WATER)) {
     terrain = PLAIN;
+  }
+
+  if (!initializing) {
+    explored++;
   }
 
   return terrain;
@@ -191,30 +202,41 @@ function move(p) {
   return true;
 }
 
-function newMap() {
-  initializing = true;
-  generateMatrix(startingSize);
-  initializing = false;
-  return miniMap();
-}
-
 function miniMap() {
   let m = setEmptyMatrixCells(false);
   return trimMatrix(m, posX, posY, miniMapSize);
 }
 
-function location() {
-  return { X: posX, Y: posY, terrain: getCellTerrain() };
+function distance() {
+  let x = Math.abs(posX - originX);
+  let y = Math.abs(posY - originY);
+  return Math.ceil(Math.hypot(x, y));
 }
 
-export {
-  newMap,
-  miniMap,
-  location,
-  move,
-  UNDISCOVERED,
+function getExplored() {
+  return explored;
+}
+
+function location() {
+  return {
+    x: posX,
+    y: posY,
+    terrain: getCellTerrain(),
+    distance: distance(),
+  };
+}
+
+export function init() {
+  initializing = true;
+  generateMatrix(STARTING_SIZE);
+  initializing = false;
+}
+
+export const TERRAINS = {
+  FOG,
   PLAIN,
   FOREST,
-  WATER,
   CITY,
 };
+
+export default { miniMap, location, move, getExplored };

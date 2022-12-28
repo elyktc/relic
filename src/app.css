@@ -13,6 +13,18 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+
+  user-select: none;
+}
+
+.row,
+.col {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.col {
+  flex-direction: column;
 }
 
 a {
@@ -25,11 +37,9 @@ a:hover {
 }
 
 body {
-  margin: 0;
+  margin: 20px 0 0 0;
   display: flex;
-  place-items: center;
   min-width: 320px;
-  min-height: 100vh;
 }
 
 h1 {
