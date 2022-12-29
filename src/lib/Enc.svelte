@@ -1,7 +1,7 @@
 <script>
   import EncImgs from "./components/EncImgs.svelte";
   import EncInfo from "./components/EncInfo.svelte";
-  import { rand, vary } from "../modules/util";
+  import WaitCircle from "./components/WaitCircle.svelte";
   import {
     showMapScreen,
     screenFade,
@@ -9,117 +9,145 @@
   } from "../modules/screens";
   import user from "../modules/user";
   import enc, { init as initEnc } from "../modules/enc";
+  import { getEncSpeed, getUserSpeed, hit } from "..//modules/battle";
   import toast from "../modules/toast";
-  import { wait } from "../modules/util";
-  import { ENC_OUT_DURATION, VARIANCE } from "../modules/constants";
+  import { rand, wait, vary } from "../modules/util";
+  import { ENC_OUT_DURATION } from "../modules/constants";
+
+  function handleKeydown(e) {
+    switch (e.key) {
+      case "f":
+        fight();
+        break;
+      case "q":
+        if (!victory && !gameover && !ran) {
+          run();
+        } else if (victory && canProceed) {
+          showMapScreen();
+        } else if (gameover && canProceed) {
+          showTitleScreen();
+        }
+        break;
+    }
+  }
 
   function fight() {
-    showFight = false;
-    damageEnc($user.str);
+    if (!canFight) return;
+    canFight = false;
+    let dmg = hit($user, $enc);
+    $enc.hp -= dmg ?? 0;
+    toast.show(dmgMsg(dmg), "enc");
     if ($enc.hp <= 0) {
-      victory();
+      win();
     } else {
-      encTurn();
+      waiting = true;
+      userSpeed = vary(getUserSpeed());
+      wait(userSpeed, () => {
+        waiting = false;
+        if (!victory && !gameover) {
+          canFight = true;
+        }
+      });
     }
   }
 
   function encTurn() {
-    wait(rand(400, 600), () => {
-      damageUser($enc.str);
+    if (!victory && !gameover && !ran) {
+      let dmg = hit($enc, $user);
+      $user.hp -= dmg ?? 0;
+      toast.show(dmgMsg(dmg), "user");
       if ($user.hp <= 0) {
-        gameover();
+        lose();
       } else {
-        showFight = true;
+        wait(vary(encSpeed), encTurn);
       }
-    });
+    }
   }
 
-  function damageUser(amount) {
-    let dmg = vary(amount);
-    $user.hp -= dmg;
-    toast.show(`${dmg}`, "user");
-  }
-
-  function damageEnc(amount) {
-    let dmg = vary(amount);
-    $enc.hp -= dmg;
-    toast.show(`${dmg}`, "enc");
-  }
-
-  function victory() {
+  function win() {
+    victory = true;
+    waiting = false;
+    canFight = false;
     wait(ENC_OUT_DURATION, () => {
-      toast.persist(`Got ${$enc.gp} gold!`);
+      canProceed = true;
       $user.gp += $enc.gp;
-      showBack = true;
+      toast.persist(`Got ${$enc.gp} gold!`);
     });
   }
 
-  function gameover() {
+  function lose() {
+    gameover = true;
+    waiting = false;
+    canFight = false;
     wait(ENC_OUT_DURATION, () => {
+      canProceed = true;
       toast.persist(`Game over`);
-      showRestart = true;
     });
+  }
+
+  function run() {
+    ran = true;
+    var drop = rand(Math.min($user.gp / 2, $enc.gp));
+    $user.gp -= drop;
+    if (drop) toast.show(`Dropped ${drop} gold`);
+    wait(1000, showMapScreen);
   }
 
   function init(node) {
     initEnc();
     //toast.show(`Encountered a ${$enc.name}!`);
-    showFight = false;
-    showBack = false;
-    showRestart = false;
-    wait(500, () => {
-      showFight = true;
+    encSpeed = getEncSpeed($enc.dex, $user.dex);
+    userSpeed = 0;//rand(getUserSpeed() + 100);
+    waiting = true;
+    wait(rand(encSpeed) + 100, encTurn);
+    wait(userSpeed, () => {
+      waiting = false;
+      canFight = true;
     });
   }
 
-  let showFight;
-  let showBack;
-  let showRestart;
-  let gp;
+  const dmgMsg = (dmg) => (dmg == undefined ? "Miss" : `${dmg}`);
+
+  let encSpeed;
+  let userSpeed;
+  let canFight;
+  let canProceed;
+  let victory;
+  let gameover;
+  let ran;
+  let waiting;
 </script>
 
 <div transition:screenFade>
   <div class="view field" use:init>
-    <div class="row imgs">
-      <EncImgs />
-    </div>
-    <div class="row info">
-      <EncInfo />
-    </div>
+    <EncImgs {ran} />
+    <EncInfo {ran} />
   </div>
-  <div class="ctrls">
-    {#if showBack}
-      <button on:click={showMapScreen}>Continue</button>
-    {:else if showFight}
-      <button on:click={fight}>Fight</button>
-    {:else if showRestart}
-      <button on:click={showTitleScreen}>Reset</button>
-    {/if}
-  </div>
+  {#if !ran}
+    <div class="ctrls col">
+      <div>
+        <button disabled={!canFight} on:click={fight}>Fight</button>
+        <WaitCircle duration={userSpeed} {waiting} />
+      </div>
+      {#if !victory && !gameover && !ran}
+        <button on:click={run}>Run</button>
+      {:else if victory && canProceed}
+        <button on:click={showMapScreen}>Carry on</button>
+      {:else if gameover && canProceed}
+        <button on:click={showTitleScreen}>Reset</button>
+      {/if}
+    </div>
+  {/if}
 </div>
+<svelte:window on:keydown={handleKeydown} />
 
 <style>
   .field {
-    background-color: lightgreen;
+    background-color: #64964b;
     border-radius: 20px;
     border: 1px solid white;
     color: #242424;
     font-size: 24px;
-  }
-
-  .imgs,
-  .info {
-    justify-content: space-between;
-  }
-
-  .imgs {
-    margin-top: 100px;
-  }
-
-  .info {
-    font-family: "Averia Libre";
-    align-items: flex-start;
-    margin-top: 20px;
   }
 
   :global(.col.user),

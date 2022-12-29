@@ -21,7 +21,15 @@
   };
 
   function userOut(node) {
-    return userKO ? blur(node, blurOptions) : fly(node, userFlyOptions);
+    if (userKO) {
+      return blur(node, blurOptions);
+    } else {
+      let options = userFlyOptions;
+      if (!encKO) {
+        userFlyOptions.x *= -1;
+      }
+      return fly(node, userFlyOptions);
+    }
   }
 
   function encOut(node) {
@@ -31,44 +39,53 @@
   let userKO, encKO;
   $: userKO = $user.hp <= 0;
   $: encKO = $enc.hp <= 0;
+
+  export let ran;
 </script>
 
-<div class="row">
-  <div class="col user img">
-    {#if !userKO}
-      <span
-        class="icon map-u"
-        class:rejoice={encKO}
-        in:fly={userFlyOptions}
-        out:userOut
-      />
-    {:else}
-      <div />
-    {/if}
+<div class="row imgs">
+  <div class="row">
+    <div class="col user img">
+      {#if !userKO && !ran}
+        <span
+          class="icon map-u"
+          class:rejoice={encKO}
+          in:fly={userFlyOptions}
+          out:userOut
+        />
+      {:else}
+        <div />
+      {/if}
+    </div>
+    <div class="col toast">
+      <Toast target="user" type={2} />
+    </div>
   </div>
-  <div class="col toast">
-    <Toast target="user" type={2} />
-  </div>
-</div>
-<div class="row">
-  <div class="col toast">
-    <Toast target="enc" type={2} />
-  </div>
-  <div class="col enc img">
-    {#if !encKO}
-      <span
-        class="icon dragon"
-        class:rejoice={userKO}
-        in:fly={encFlyOptions}
-        out:encOut
-      />
-    {:else}
-      <div />
-    {/if}
+  <div class="row">
+    <div class="col toast">
+      <Toast target="enc" type={2} />
+    </div>
+    <div class="col enc img">
+      {#if !encKO}
+        <span
+          class="icon dragon"
+          class:rejoice={userKO}
+          in:fly={encFlyOptions}
+          out:encOut
+        />
+      {:else}
+        <div />
+      {/if}
+    </div>
   </div>
 </div>
 
 <style>
+  .imgs {
+    justify-content: space-between;
+    margin-top: 100px;
+  }
+
   .img {
     height: 120px;
     justify-content: flex-end;

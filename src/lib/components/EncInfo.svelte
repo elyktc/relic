@@ -17,21 +17,25 @@
 
   $: if ($user.hp) hpMeter.set($user.hp / $user.maxhp);
   $: if ($enc.hp) encHpMeter.set($enc.hp / $enc.maxhp);
+  
+  export let ran;
 </script>
 
-<div class="col user">
-  {#if $user.hp > 0}
-    <progress value={$hpMeter} />
-  {:else}
-    <div />
-  {/if}
-</div>
-<div class="col enc">
-  {#if $enc.hp > 0}
-    <progress value={$encHpMeter} />
-  {:else}
-    <div />
-  {/if}
+<div class="row info">
+  <div class="col user">
+    {#if $user.hp > 0  && !ran}
+      <progress value={$hpMeter} />
+    {:else}
+      <div />
+    {/if}
+  </div>
+  <div class="col enc">
+    {#if $enc.hp > 0}
+      <progress value={$encHpMeter} />
+    {:else}
+      <div />
+    {/if}
+  </div>
 </div>
 
 <style>
@@ -39,5 +43,12 @@
     display: block;
     width: 50%;
     accent-color: red;
+  }
+
+  .info {
+    justify-content: space-between;
+    font-family: "Averia Libre";
+    align-items: flex-start;
+    margin-top: 20px;
   }
 </style>

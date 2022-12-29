@@ -15,6 +15,9 @@
 
   function handleKeydown(e) {
     switch (e.key) {
+      case "x":
+        showMenuScreen();
+        break;
       case "q":
         moveNW();
         break;

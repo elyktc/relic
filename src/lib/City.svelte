@@ -9,6 +9,17 @@
   import { getCity } from "../modules/cities";
   import toast from "../modules/toast";
 
+  function handleKeydown(e) {
+    switch (e.key) {
+      case "q":
+        showMapScreen();
+        break;
+      case "r":
+        rest();
+        break;
+    }
+  }
+
   function rest() {
     if ($user.gp >= city.innCost) {
       $user.gp -= city.innCost;
@@ -40,6 +51,7 @@
     <button on:click={showMapScreen}>Leave</button>
   </div>
 </div>
+<svelte:window on:keydown={handleKeydown} />
 
 <style>
 </style>

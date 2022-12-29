@@ -55,4 +55,9 @@
     margin: 10px;
     border-radius: 25px;
   }
+
+  :global(.ctrls button[disabled]) {
+    border: none;
+    cursor: default;
+  }
 </style>

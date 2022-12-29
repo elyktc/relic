@@ -58,7 +58,7 @@
     font-family: "Courier New", Courier, monospace;
     word-break: keep-all;
     overflow: hidden;
-    background-color: lightgreen;
+    background-color: #64964b;
     border-radius: 20px;
     border: 1px solid white;
   }
