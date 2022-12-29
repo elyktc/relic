@@ -42,7 +42,8 @@
   progress {
     display: block;
     width: 50%;
-    accent-color: red;
+    height: 15px;
+    accent-color: firebrick;
   }
 
   .info {

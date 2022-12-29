@@ -7,7 +7,7 @@
     screenFade,
     showTitleScreen,
   } from "../modules/screens";
-  import user from "../modules/user";
+  import user, { levelUp } from "../modules/user";
   import enc, { init as initEnc } from "../modules/enc";
   import { getEncSpeed, getUserSpeed, hit } from "..//modules/battle";
   import toast from "../modules/toast";
@@ -74,8 +74,18 @@
     canFight = false;
     wait(ENC_OUT_DURATION, () => {
       canProceed = true;
-      $user.gp += $enc.gp;
-      toast.persist(`Got ${$enc.gp} gold!`);
+      if ($enc.xp) {
+        $user.xp += $enc.xp;
+        toast.persist(`Gained ${$enc.xp} experience`, "enc");
+      }
+      if ($user.xp >= $user.next) {
+        levelUp($user);
+        toast.persist(`Level up!`, "enc");
+      }
+      if ($enc.gp) {
+        $user.gp += $enc.gp;
+        toast.persist(`Found ${$enc.gp} gold`, "enc");
+      }
     });
   }
 
@@ -161,11 +171,12 @@
 
 <style>
   .field {
-    background-color: var(--color-grass);
+    background-color: var(--color-grass, green);
     border-radius: 20px;
     border: 1px solid white;
-    color: var(--color-background);
+    color: var(--color-background, black);
     font-size: 24px;
+    margin: 0 10px;
   }
 
   :global(.col.user),

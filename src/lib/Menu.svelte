@@ -6,6 +6,7 @@
   } from "../modules/screens";
   import map from "../modules/map";
   import user from "../modules/user";
+  import { format } from "../modules/util";
 
   function handleKeydown(e) {
     switch (e.key) {
@@ -23,6 +24,24 @@
   <div class="view col">
     <h1 style:display="none">{$user.name}</h1>
     <div class="row">
+      <div class="col label">Level</div>
+      <div class="col value">
+        {$user.lvl}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col label">Experience</div>
+      <div class="col value">
+        {$user.xp}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col label">Next level at</div>
+      <div class="col value">
+        {$user.next}
+      </div>
+    </div>
+    <div class="row" style:margin-top="20px">
       <div class="col label">Health</div>
       <div class="col value">
         {$user.hp} / {$user.maxhp}
@@ -49,20 +68,24 @@
     <div class="row">
       <div class="col label">Steps</div>
       <div class="col value">
-        {new Intl.NumberFormat().format($user.steps)}
+        {format($user.steps)}
       </div>
     </div>
     <div class="row">
       <div class="col label">Explored</div>
       <div class="col value">
-        {new Intl.NumberFormat().format(map.getExplored())}
+        {format(map.getExplored())}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col label">Distance traveled</div>
+      <div class="col value">
+        {format(map.location().distance)}
       </div>
     </div>
   </div>
   <div class="ctrls">
-    <button on:click={showTitleScreen} style:background-color="maroon"
-      >Reset</button
-    >
+    <button on:click={showTitleScreen} class="danger">Reset</button>
     <button on:click={showMapScreen}>Back</button>
   </div>
 </div>
@@ -86,5 +109,10 @@
 
   .value {
     justify-content: flex-end;
+  }
+
+  .danger {
+    background-color: maroon;
+    color: white;
   }
 </style>

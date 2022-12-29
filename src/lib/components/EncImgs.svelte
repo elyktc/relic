@@ -65,18 +65,16 @@
     <div class="col toast">
       <Toast target="enc" type={2} />
     </div>
-    <div class="col enc img">
-      {#if !encKO}
+    {#if !encKO}
+      <div class="col enc img">
         <span
           class="icon dragon"
           class:rejoice={userKO}
           in:fly={encFlyOptions}
           out:encOut
         />
-      {:else}
-        <div />
-      {/if}
-    </div>
+      </div>
+    {/if}
   </div>
 </div>
 

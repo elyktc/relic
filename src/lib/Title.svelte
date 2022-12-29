@@ -35,6 +35,10 @@
     font-family: "Lato", Helvetica, Arial, sans-serif;
   }
 
+  h1 {
+    text-shadow: 1px 2px 10px teal;
+  }
+
   input {
     font-size: 28px;
     height: 50px;

@@ -7,6 +7,7 @@ export const USER_DEX_MIN = 4;
 export const ENC_HP_MIN = 10;
 export const ENC_STR_MIN = 2;
 export const ENC_DEX_MIN = 2;
+export const ENC_GP_MAX = 50;
 
 export const HP_METER_DURATION = 200;
 export const ENC_OUT_DURATION = 500;

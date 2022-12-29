@@ -15,3 +15,7 @@ export function vary(amount, pct) {
   let diff = Math.ceil(Math.abs(amount * pct));
   return rand(amount + diff, amount - diff);
 }
+
+export function format(number) {
+  return new Intl.NumberFormat().format(number);
+}

@@ -4,6 +4,7 @@ import {
   ENC_DEX_MIN,
   ENC_STR_MIN,
   USER_STAT_POOL,
+  ENC_GP_MAX,
 } from "./constants";
 import { v4 as uuid } from "uuid";
 import { writable } from "svelte/store";
@@ -22,7 +23,9 @@ function createEnc() {
   dex += ENC_DEX_MIN;
 
   let maxhp = hp;
-  let gp = Math.ceil(vary(maxhp + str) / 2);
+  let gp = rand(ENC_GP_MAX);
+  let xp = Math.ceil(vary(maxhp + str + dex) / 2);
+  let lvl = 1;
 
   return {
     name,
@@ -31,13 +34,15 @@ function createEnc() {
     str,
     dex,
     gp,
+    xp,
+    lvl,
   };
 }
-
-const enc = writable(createEnc());
 
 export function init() {
   enc.set(createEnc());
 }
+
+const enc = writable(createEnc());
 
 export default enc;

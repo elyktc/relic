@@ -43,6 +43,7 @@
     height: 360px;
     width: 360px;
     font-family: "Averia Libre";
+    overflow: hidden;
   }
 
   :global(.ctrls) {

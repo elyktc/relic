@@ -7,8 +7,8 @@ span.icon {
 }
 
 span.icon.map-f {
-  background-color: var(--color-background);
-  box-shadow: 0 0 16px 12px var(--color-background);
+  background-color: var(--color-background, black);
+  box-shadow: 0 0 16px 12px var(--color-background, black);
 }
 
 span.icon.map-w {
@@ -18,7 +18,7 @@ span.icon.map-w {
 }
 
 span.icon.map-u {
-  color: var(--color-user);
+  color: var(--color-user, black);
 }
 
 span.icon.map-u::after {

@@ -74,6 +74,8 @@
     --toastWidth: 100%;
     --toastMinHeight: 2rem;
     --toastPadding: 0;
+    --toastMargin: 0;
+    --toastMsgPadding: 0 10px;
     --toastColor: white;
     --toastBarBackground: transparent;
     --toastBackground: transparent;
@@ -85,5 +87,6 @@
     position: relative;
     top: 0;
     right: 0;
+    text-align: right;
   }
 </style>

@@ -48,8 +48,8 @@
   }
 
   .progress-bar {
-    width: var(--size);
-    height: var(--size);
+    width: var(--size, 20px);
+    height: var(--size, 20px);
     position: relative;
     display: inline;
   }
@@ -63,32 +63,37 @@
   }
 
   .circle {
-    width: var(--size);
-    height: var(--size);
+    width: var(--size, 20px);
+    height: var(--size, 20px);
     box-sizing: border-box;
     border: 2px solid white;
-    border-radius: calc(var(--size) / 2);
+    border-radius: calc(var(--size, 20px) / 2);
     position: absolute;
   }
 
   .wrapper1 {
-    clip: rect(0px, var(--size), var(--size), calc(var(--size) / 2));
+    clip: rect(
+      0px,
+      var(--size, 20px),
+      var(--size, 20px),
+      calc(var(--size, 20px) / 2)
+    );
     /* clip-path: inset(0px 0px 0px 10px); */
   }
 
   .wrapper1 > .circle {
-    clip: rect(0px, calc(var(--size) / 2), var(--size), 0px);
+    clip: rect(0px, calc(var(--size, 20px) / 2), var(--size, 20px), 0px);
     /* clip-path: inset(0px 0px 0px 10px); */
     transform: rotate(0deg);
   }
 
   .wrapper2 {
-    clip: rect(0px, calc(var(--size) / 2), var(--size), 0px);
+    clip: rect(0px, calc(var(--size, 20px) / 2), var(--size, 20px), 0px);
     /* clip-path: inset(0px 0px 0px 10px); */
   }
 
   .wrapper2 > .circle {
-    clip: rect(0px, calc(var(--size) / 2), var(--size), 0px);
+    clip: rect(0px, calc(var(--size, 20px) / 2), var(--size, 20px), 0px);
     /* clip-path: inset(0px 0px 0px 10px); */
     transform: rotate(180deg);
   }
