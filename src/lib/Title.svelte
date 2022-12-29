@@ -2,6 +2,14 @@
   import { showMapScreen, screenFade } from "../modules/screens";
   import user, { init as initUser } from "../modules/user";
 
+  function handleKeydown(e) {
+    switch (e.key) {
+      case " ":
+        showMapScreen();
+        break;
+    }
+  }
+
   function init(node) {
     initUser();
     node.focus();
@@ -20,6 +28,7 @@
     <button use:init on:click={showMapScreen}>Start</button>
   </div>
 </div>
+<svelte:window on:keydown={handleKeydown} />
 
 <style>
   .view {
