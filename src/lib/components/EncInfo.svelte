@@ -17,13 +17,13 @@
 
   $: if ($user.hp) hpMeter.set($user.hp / $user.maxhp);
   $: if ($enc.hp) encHpMeter.set($enc.hp / $enc.maxhp);
-  
+
   export let ran;
 </script>
 
 <div class="row info">
   <div class="col user">
-    {#if $user.hp > 0  && !ran}
+    {#if $user.hp > 0 && !ran}
       <progress value={$hpMeter} />
     {:else}
       <div />

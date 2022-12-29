@@ -97,7 +97,7 @@
     initEnc();
     //toast.show(`Encountered a ${$enc.name}!`);
     encSpeed = getEncSpeed($enc.dex, $user.dex);
-    userSpeed = 0;//rand(getUserSpeed() + 100);
+    userSpeed = 0; //rand(getUserSpeed() + 100);
     waiting = true;
     wait(rand(encSpeed) + 100, encTurn);
     wait(userSpeed, () => {
@@ -143,10 +143,10 @@
 
 <style>
   .field {
-    background-color: #64964b;
+    background-color: var(--color-grass);
     border-radius: 20px;
     border: 1px solid white;
-    color: #242424;
+    color: var(--color-background);
     font-size: 24px;
   }
 

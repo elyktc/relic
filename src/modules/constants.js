@@ -10,7 +10,7 @@ export const ENC_DEX_MIN = 2;
 
 export const HP_METER_DURATION = 200;
 export const ENC_OUT_DURATION = 500;
-export const BATTLE_SPEED = 5;
+export const BATTLE_SPEED = 2;
 export const USER_SPEED = 1000;
 export const HIT_LUCK = 2;
 
