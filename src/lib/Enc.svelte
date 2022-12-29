@@ -19,6 +19,9 @@
       case "f":
         fight();
         break;
+      case "v":
+        block();
+        break;
       case "q":
         if (!victory && !gameover && !ran) {
           run();
@@ -40,20 +43,21 @@
     if ($enc.hp <= 0) {
       win();
     } else {
-      waiting = true;
-      userSpeed = vary(getUserSpeed());
-      wait(userSpeed, () => {
-        waiting = false;
-        if (!victory && !gameover) {
-          canFight = true;
-        }
-      });
+      userWait();
     }
+  }
+
+  function block() {
+    if (!canFight) return;
+    blocking = true;
+    canFight = false;
+    userWait();
   }
 
   function encTurn() {
     if (!victory && !gameover && !ran) {
       let dmg = hit($enc, $user);
+      if (blocking) dmg = Math.ceil(dmg / 4);
       $user.hp -= dmg ?? 0;
       toast.show(dmgMsg(dmg), "user");
       if ($user.hp <= 0) {
@@ -82,6 +86,18 @@
     wait(ENC_OUT_DURATION, () => {
       canProceed = true;
       toast.persist(`Game over`);
+    });
+  }
+
+  function userWait() {
+    waiting = true;
+    userSpeed = vary(getUserSpeed());
+    wait(userSpeed, () => {
+      waiting = false;
+      if (!victory && !gameover) {
+        canFight = true;
+        blocking = false;
+      }
     });
   }
 
@@ -116,6 +132,7 @@
   let gameover;
   let ran;
   let waiting;
+  let blocking;
 </script>
 
 <div transition:screenFade>
@@ -127,6 +144,7 @@
     <div class="ctrls col">
       <div>
         <button disabled={!canFight} on:click={fight}>Fight</button>
+        <button disabled={!canFight} on:click={block}>Block</button>
         <WaitCircle duration={userSpeed} {waiting} />
       </div>
       {#if !victory && !gameover && !ran}
