@@ -132,7 +132,7 @@
       {#if !victory && !gameover && !ran}
         <button on:click={run}>Run</button>
       {:else if victory && canProceed}
-        <button on:click={showMapScreen}>Carry on</button>
+        <button on:click={showMapScreen}>Proceed</button>
       {:else if gameover && canProceed}
         <button on:click={showTitleScreen}>Reset</button>
       {/if}
