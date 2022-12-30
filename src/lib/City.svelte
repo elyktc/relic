@@ -2,12 +2,13 @@
   import {
     screenFade,
     showMapScreen,
-    showBlankScreen,
+    showSleepScreen,
   } from "../modules/screens";
   import map from "../modules/map";
   import user from "../modules/user";
   import { getCity } from "../modules/cities";
   import toast from "../modules/toast";
+  import { onMount } from "svelte";
 
   function handleKeydown(e) {
     switch (e.key) {
@@ -23,24 +24,23 @@
   function rest() {
     if ($user.gp >= city.innCost) {
       $user.gp -= city.innCost;
-      $user.hp = $user.maxhp;
-      showBlankScreen(2000, showMapScreen);
+      showSleepScreen();
     } else {
       toast.show("Not enough gold");
     }
   }
 
-  function init(node) {
+  onMount(() => {
     let loc = map.location().abs;
     city = getCity(loc.x, loc.y);
     //toast.show(`City of ${city.name}`);
-  }
+  });
 
   let city;
 </script>
 
 <div transition:screenFade>
-  <div class="view col" use:init>
+  <div class="view col">
     {#if city}
       <p>Inn</p>
       <p>{city.innCost} gold per night</p>

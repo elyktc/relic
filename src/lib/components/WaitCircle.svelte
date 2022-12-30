@@ -1,16 +1,30 @@
 <script>
+  import { createEventDispatcher } from "svelte";
+
+  const dispatch = createEventDispatcher();
+
   function setProgress() {
     progress += step;
     if (percentage >= 100) {
       clearInterval(interval);
+      dispatch("ready");
     }
   }
 
-  function init(node) {
+  export function start(t) {
+    if (interval) {
+      clearInterval(interval);
+    }
+    duration = t;
     progress = 0;
     interval = setInterval(setProgress, step);
   }
 
+  export function cancel() {
+    progress = duration;
+  }
+
+  let duration = 1000;
   let progress;
   let percentage;
   let interval;
@@ -19,28 +33,20 @@
   $: deg = percentage * 3.6;
 
   const step = 100;
-
-  export let duration = 1000;
-  export let waiting = false;
 </script>
 
-{#if waiting}
-  <div class="progress-bar" class:hidden={percentage >= 100} use:init>
-    <div class="wrapper wrapper1">
-      <div
-        class="circle"
-        style:transform={`rotate(${Math.min(deg, 180)}deg)`}
-      />
-    </div>
-    <div class="wrapper wrapper2">
-      <div
-        class="circle"
-        class:hidden={percentage <= 50}
-        style:transform={`rotate(${deg}deg)`}
-      />
-    </div>
+<div class="progress-bar" class:hidden={percentage >= 100}>
+  <div class="wrapper wrapper1">
+    <div class="circle" style:transform={`rotate(${Math.min(deg, 180)}deg)`} />
   </div>
-{/if}
+  <div class="wrapper wrapper2">
+    <div
+      class="circle"
+      class:hidden={percentage <= 50}
+      style:transform={`rotate(${deg}deg)`}
+    />
+  </div>
+</div>
 
 <style>
   :root {

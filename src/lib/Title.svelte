@@ -1,6 +1,7 @@
 <script>
   import { showMapScreen, screenFade } from "../modules/screens";
   import user, { init as initUser } from "../modules/user";
+  import { onMount } from "svelte";
 
   function handleKeydown(e) {
     switch (e.key) {
@@ -10,10 +11,9 @@
     }
   }
 
-  function init(node) {
+  onMount(() => {
     initUser();
-    node.focus();
-  }
+  });
 </script>
 
 <div transition:screenFade>
@@ -25,7 +25,7 @@
     </div>
   </div>
   <div class="ctrls">
-    <button use:init on:click={showMapScreen}>Start</button>
+    <button on:click={showMapScreen}>Start</button>
   </div>
 </div>
 <svelte:window on:keydown={handleKeydown} />

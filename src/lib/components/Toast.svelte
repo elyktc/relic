@@ -1,5 +1,6 @@
 <script>
   import { SvelteToast } from "@zerodevx/svelte-toast";
+  import { onMount } from "svelte";
 
   const options1 = {
     duration: 1000, // duration of progress bar tween to the `next` value
@@ -26,19 +27,19 @@
   };
 
   let options;
-  function init(node) {
+  onMount(() => {
     if (type == 1) {
       options = options1;
     } else if (type == 2) {
       options = options2;
     }
-  }
+  });
 
   export let type = 1;
   export let target = undefined;
 </script>
 
-<div class={`toast-wrapper-${type}`} use:init>
+<div class={`toast-wrapper-${type}`}>
   <SvelteToast {options} {target} />
 </div>
 

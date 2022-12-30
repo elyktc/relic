@@ -10,6 +10,7 @@
   import { clearCities } from "../modules/cities";
   import { rand } from "../modules/util";
   import { ENCFREQ } from "../modules/constants";
+  import { onMount } from "svelte";
 
   function drawMap(m) {
     mapHtml = m.map((r) => r.map(icon).join("")).join("<br/>");
@@ -37,19 +38,19 @@
     }
   }
 
-  function init(node) {
+  onMount(() => {
     if (!$user.steps) {
       initMap();
       clearCities();
     }
     drawMap(map.miniMap());
-  }
+  });
 
   let mapHtml = "";
 </script>
 
 <div transition:screenFade>
-  <div class="view field" use:init>{@html mapHtml}</div>
+  <div class="view field">{@html mapHtml}</div>
   <MapCtrls on:move={(e) => move(e.detail)} />
 </div>
 

@@ -9,6 +9,7 @@ const SCREENS = {
   MENU: 2,
   ENC: 3,
   CITY: 4,
+  SLEEP: 5,
 };
 
 const screenStore = writable(SCREENS.TITLE);
@@ -33,9 +34,8 @@ function showCityScreen() {
   screenStore.set(SCREENS.CITY);
 }
 
-function showBlankScreen(duration, callback) {
-  screenStore.set(undefined);
-  wait(duration, callback);
+function showSleepScreen() {
+  screenStore.set(SCREENS.SLEEP);
 }
 
 function screenFade(node) {
@@ -51,5 +51,5 @@ export {
   showEncScreen,
   showTitleScreen,
   showCityScreen,
-  showBlankScreen,
+  showSleepScreen,
 };

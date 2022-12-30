@@ -20,33 +20,41 @@
     duration: ENC_OUT_DURATION,
   };
 
-  function userOut(node) {
-    if (userKO) {
+  function out(node, won, lost, flyOptions, prevent) {
+    if (prevent) {
+      return;
+    }
+    if (lost) {
       return blur(node, blurOptions);
     } else {
-      let options = userFlyOptions;
-      if (!encKO) {
-        userFlyOptions.x *= -1;
+      let options = flyOptions;
+      if (!won) {
+        options.x *= -1;
       }
-      return fly(node, userFlyOptions);
+      return fly(node, options);
     }
   }
 
+  function userOut(node) {
+    return out(node, encKO, userKO, userFlyOptions);
+  }
+
   function encOut(node) {
-    return encKO ? blur(node, blurOptions) : undefined;
+    return out(node, userKO, encKO, encFlyOptions, userKO);
   }
 
   let userKO, encKO;
   $: userKO = $user.hp <= 0;
   $: encKO = $enc.hp <= 0;
 
-  export let ran;
+  export let userRan;
+  export let encRan;
 </script>
 
 <div class="row imgs">
   <div class="row">
     <div class="col user img">
-      {#if !userKO && !ran}
+      {#if !userKO && !userRan}
         <span
           class="icon map-u"
           class:rejoice={encKO}
@@ -65,7 +73,7 @@
     <div class="col toast">
       <Toast target="enc" type={2} />
     </div>
-    {#if !encKO}
+    {#if !encKO && !encRan}
       <div class="col enc img">
         <span
           class="icon dragon"

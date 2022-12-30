@@ -18,19 +18,20 @@
   $: if ($user.hp) hpMeter.set($user.hp / $user.maxhp);
   $: if ($enc.hp) encHpMeter.set($enc.hp / $enc.maxhp);
 
-  export let ran;
+  export let userRan;
+  export let encRan;
 </script>
 
 <div class="row info">
   <div class="col user">
-    {#if $user.hp > 0 && !ran}
+    {#if $user.hp > 0 && !userRan}
       <progress value={$hpMeter} />
     {:else}
       <div />
     {/if}
   </div>
   <div class="col enc">
-    {#if $enc.hp > 0}
+    {#if $enc.hp > 0 && !encRan}
       <progress value={$encHpMeter} />
     {:else}
       <div />

@@ -45,6 +45,10 @@ span.icon.map-f::after {
   content: "\00A0";
 }
 
+span.icon.moon::after {
+  content: "\1f319";
+}
+
 span.icon.dragon::after {
   content: "\1f409";
 }

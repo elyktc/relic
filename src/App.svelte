@@ -4,13 +4,15 @@
   import Menu from "./lib/Menu.svelte";
   import Enc from "./lib/Enc.svelte";
   import City from "./lib/City.svelte";
+  import Sleep from "./lib/Sleep.svelte";
   import Toast from "./lib/components/Toast.svelte";
   import { screenStore, SCREENS } from "./modules/screens";
   import toast from "./modules/toast";
   import { wait } from "./modules/util";
   import { SCREEN_FADE_DURATION } from "./modules/constants";
+  import { onMount } from "svelte";
 
-  function init(node) {
+  onMount(() => {
     screenStore.subscribe((value) => {
       screen = undefined;
       toast.clear();
@@ -18,12 +20,12 @@
         screen = value;
       });
     });
-  }
+  });
 
   let screen;
 </script>
 
-<main use:init>
+<main>
   <Toast />
   {#if screen == SCREENS.TITLE}
     <Title />
@@ -35,6 +37,8 @@
     <Enc />
   {:else if screen == SCREENS.CITY}
     <City />
+  {:else if screen == SCREENS.SLEEP}
+    <Sleep />
   {/if}
 </main>
 
