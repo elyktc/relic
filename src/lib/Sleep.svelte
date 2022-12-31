@@ -12,7 +12,7 @@
 
 <div transition:screenFade>
   <div class="view">
-    <span class="icon moon" style:margin-top="80px" />
+    <div class="icon moon" style:margin-top="80px" />
   </div>
 </div>
 

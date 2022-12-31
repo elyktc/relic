@@ -13,11 +13,10 @@
   import { onMount } from "svelte";
 
   function drawMap(m) {
-    mapHtml = m.map((r) => r.map(icon).join("")).join("<br/>");
-  }
-
-  function icon(s) {
-    return `<span class="icon map-${s}"></span>`;
+    mapHtml = "<div class=\"row\">" + m.map((r) => 
+        r.map((c) => `<div class="icon map-${c}"></div>`).join(""))
+      .join("</div><div class=\"row\">") +
+      "</div>";
   }
 
   function getEncFreq() {
@@ -63,4 +62,11 @@
     border-radius: 20px;
     border: 1px solid white;
   }
+
+.view :global(.icon) {
+  width: 40px;
+  height: 40px;
+  font-size: 40px;
+  line-height: 40px;
+}
 </style>

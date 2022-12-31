@@ -62,7 +62,7 @@
   function encTurn() {
     if (!victory && !gameover && !userRan && !exited) {
       let dmg = hit($enc, $user);
-      if (blocking) {
+      if (dmg && blocking) {
         dmg = Math.ceil(dmg / 4);
       }
       $user.hp -= dmg ?? 0;

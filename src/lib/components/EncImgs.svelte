@@ -40,7 +40,7 @@
   }
 
   function encOut(node) {
-    return out(node, userKO, encKO, encFlyOptions, userKO);
+    return out(node, userKO, encKO, encFlyOptions, userKO || userRan);
   }
 
   let userKO, encKO;
@@ -55,7 +55,7 @@
   <div class="row">
     <div class="col user img">
       {#if !userKO && !userRan}
-        <span
+        <div
           class="icon map-u"
           class:rejoice={encKO}
           in:fly={userFlyOptions}
@@ -75,7 +75,7 @@
     </div>
     {#if !encKO && !encRan}
       <div class="col enc img">
-        <span
+        <div
           class="icon dragon"
           class:rejoice={userKO}
           in:fly={encFlyOptions}
