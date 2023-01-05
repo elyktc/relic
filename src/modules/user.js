@@ -50,7 +50,7 @@ function createUser() {
     next,
     ko() {
       return this.hp <= 0;
-    }
+    },
   };
 }
 

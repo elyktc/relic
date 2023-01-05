@@ -44,7 +44,13 @@
   }
 
   function encOut(node) {
-    return out(node, $user.ko(), $enc.ko(), encFlyOptions, $user.ko() || $userRan);
+    return out(
+      node,
+      $user.ko(),
+      $enc.ko(),
+      encFlyOptions,
+      $user.ko() || $userRan
+    );
   }
 </script>
 

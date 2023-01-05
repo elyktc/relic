@@ -38,7 +38,7 @@ function createEnc() {
     lvl,
     ko() {
       return this.hp <= 0;
-    }
+    },
   };
 }
 
