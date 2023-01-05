@@ -36,6 +36,9 @@ function createEnc() {
     gp,
     xp,
     lvl,
+    ko() {
+      return this.hp <= 0;
+    }
   };
 }
 

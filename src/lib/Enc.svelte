@@ -14,6 +14,14 @@
   import { rand, wait, vary } from "../modules/util";
   import { ENC_OUT_DURATION } from "../modules/constants";
   import { onMount } from "svelte";
+  import { setContext } from "svelte";
+  import { writable } from "svelte/store";
+
+  const userRan = writable(false);
+  const encRan = writable(false);
+
+  setContext("userRan", userRan);
+  setContext("encRan", encRan);
 
   function handleKeydown(e) {
     switch (e.key) {
@@ -24,7 +32,7 @@
         block();
         break;
       case "q":
-        if (!victory && !gameover && !userRan && !encRan) {
+        if (!victory && !gameover && !$userRan && !$encRan) {
           userRun();
         } else if (victory && canProceed) {
           showMapScreen();
@@ -35,15 +43,27 @@
     }
   }
 
+  function userWait() {
+    userSpeed = vary(getUserSpeed());
+    waitSign.start(userSpeed);
+  }
+
+  function userTurn() {
+    if (!victory && !gameover) {
+      canFight = true;
+    }
+  }
+
   function fight() {
     if (!canFight) {
       return;
     }
     canFight = false;
+    blocking = false;
     let dmg = hit($user, $enc);
     $enc.hp -= dmg ?? 0;
     toast.show(dmgMsg(dmg), "enc");
-    if ($enc.hp <= 0) {
+    if ($enc.ko()) {
       win();
     } else {
       userWait();
@@ -59,8 +79,19 @@
     userWait();
   }
 
+  function userRun() {
+    waitSign.cancel();
+    $userRan = true;
+    var drop = rand(Math.min($user.gp / 2, $enc.gp));
+    $user.gp -= drop;
+    if (drop) {
+      toast.show(`Dropped ${drop} gold`);
+    }
+    wait(1000, showMapScreen);
+  }
+
   function encTurn() {
-    if (!victory && !gameover && !userRan && !exited) {
+    if (!victory && !gameover && !$userRan && !exited) {
       let dmg = hit($enc, $user);
       if (dmg && blocking) {
         dmg = Math.ceil(dmg / 4);
@@ -72,7 +103,7 @@
       } else {
         encMisses = 0;
       }
-      if ($user.hp <= 0) {
+      if ($user.ko()) {
         lose();
       } else {
         if (encMisses > 3 && rand(1) == 1) {
@@ -82,6 +113,12 @@
         }
       }
     }
+  }
+
+  function encRun() {
+    $encRan = true;
+    toast.show("Escaped");
+    win();
   }
 
   function win() {
@@ -94,9 +131,19 @@
     });
   }
 
+  function lose() {
+    waitSign.cancel();
+    gameover = true;
+    canFight = false;
+    wait(ENC_OUT_DURATION, () => {
+      canProceed = true;
+      toast.persist(`Game over`);
+    });
+  }
+
   function loot() {
     let xp = $enc.xp;
-    if (encRan) {
+    if ($encRan) {
       xp *= 1 - $enc.hp / $enc.maxhp;
       xp = Math.floor(Math.min(xp, $user.next - $user.xp - 1));
     }
@@ -108,51 +155,10 @@
       levelUp($user);
       toast.persist(`Level up!`, "enc");
     }
-    if (!encRan) {
-      if ($enc.gp) {
-        $user.gp += $enc.gp;
-        toast.persist(`Found ${$enc.gp} gold`, "enc");
-      }
+    if ($enc.gp && !$encRan) {
+      $user.gp += $enc.gp;
+      toast.persist(`Found ${$enc.gp} gold`, "enc");
     }
-  }
-
-  function lose() {
-    waitSign.cancel();
-    gameover = true;
-    canFight = false;
-    wait(ENC_OUT_DURATION, () => {
-      canProceed = true;
-      toast.persist(`Game over`);
-    });
-  }
-
-  function userWait() {
-    userSpeed = vary(getUserSpeed());
-    waitSign.start(userSpeed);
-  }
-
-  function userTurn() {
-    if (!victory && !gameover) {
-      canFight = true;
-      blocking = false;
-    }
-  }
-
-  function userRun() {
-    waitSign.cancel();
-    userRan = true;
-    var drop = rand(Math.min($user.gp / 2, $enc.gp));
-    $user.gp -= drop;
-    if (drop) {
-      toast.show(`Dropped ${drop} gold`);
-    }
-    wait(1000, showMapScreen);
-  }
-
-  function encRun() {
-    encRan = true;
-    toast.show("Escaped");
-    win();
   }
 
   onMount(() => {
@@ -176,8 +182,6 @@
   let canProceed;
   let victory;
   let gameover;
-  let userRan;
-  let encRan;
   let blocking;
   let exited;
   let waitSign;
@@ -186,17 +190,17 @@
 
 <div transition:screenFade>
   <div class="view field">
-    <EncImgs {userRan} {encRan} />
-    <EncInfo {userRan} {encRan} />
+    <EncImgs />
+    <EncInfo />
   </div>
-  {#if !userRan}
+  {#if !$userRan}
     <div class="ctrls col">
       <div>
         <button disabled={!canFight} on:click={fight}>Fight</button>
         <button disabled={!canFight} on:click={block}>Block</button>
         <WaitCircle bind:this={waitSign} on:ready={userTurn} />
       </div>
-      {#if !victory && !gameover && !userRan && !encRan}
+      {#if !victory && !gameover && !$userRan && !$encRan}
         <button on:click={userRun}>Run</button>
       {:else if victory && canProceed}
         <button on:click={showMapScreen}>Proceed</button>

@@ -48,6 +48,9 @@ function createUser() {
     lvl,
     xp,
     next,
+    ko() {
+      return this.hp <= 0;
+    }
   };
 }
 

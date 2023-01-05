@@ -4,6 +4,10 @@
   import { HP_METER_DURATION } from "../../modules/constants";
   import { tweened } from "svelte/motion";
   import { cubicOut } from "svelte/easing";
+  import { getContext } from "svelte";
+
+  const userRan = getContext("userRan");
+  const encRan = getContext("encRan");
 
   const hpMeter = tweened(0, {
     duration: HP_METER_DURATION,
@@ -17,21 +21,18 @@
 
   $: if ($user.hp) hpMeter.set($user.hp / $user.maxhp);
   $: if ($enc.hp) encHpMeter.set($enc.hp / $enc.maxhp);
-
-  export let userRan;
-  export let encRan;
 </script>
 
 <div class="row info">
   <div class="col user">
-    {#if $user.hp > 0 && !userRan}
+    {#if !$user.ko() && !$userRan}
       <progress value={$hpMeter} />
     {:else}
       <div />
     {/if}
   </div>
   <div class="col enc">
-    {#if $enc.hp > 0 && !encRan}
+    {#if !$enc.ko() && !$encRan}
       <progress value={$encHpMeter} />
     {:else}
       <div />

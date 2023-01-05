@@ -4,6 +4,10 @@
   import enc from "../../modules/enc";
   import { ENC_OUT_DURATION } from "../../modules/constants";
   import { fly, blur } from "svelte/transition";
+  import { getContext } from "svelte";
+
+  const userRan = getContext("userRan");
+  const encRan = getContext("encRan");
 
   const userFlyOptions = {
     x: 40,
@@ -36,28 +40,21 @@
   }
 
   function userOut(node) {
-    return out(node, encKO, userKO, userFlyOptions);
+    return out(node, $enc.ko(), $user.ko(), userFlyOptions);
   }
 
   function encOut(node) {
-    return out(node, userKO, encKO, encFlyOptions, userKO || userRan);
+    return out(node, $user.ko(), $enc.ko(), encFlyOptions, $user.ko() || $userRan);
   }
-
-  let userKO, encKO;
-  $: userKO = $user.hp <= 0;
-  $: encKO = $enc.hp <= 0;
-
-  export let userRan;
-  export let encRan;
 </script>
 
 <div class="row imgs">
   <div class="row">
     <div class="col user img">
-      {#if !userKO && !userRan}
+      {#if !$user.ko() && !$userRan}
         <div
           class="icon map-u"
-          class:rejoice={encKO}
+          class:rejoice={$enc.ko()}
           in:fly={userFlyOptions}
           out:userOut
         />
@@ -73,11 +70,11 @@
     <div class="col toast">
       <Toast target="enc" type={2} />
     </div>
-    {#if !encKO && !encRan}
+    {#if !$enc.ko() && !$encRan}
       <div class="col enc img">
         <div
           class="icon dragon"
-          class:rejoice={userKO}
+          class:rejoice={$user.ko()}
           in:fly={encFlyOptions}
           out:encOut
         />
