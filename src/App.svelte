@@ -10,10 +10,12 @@
   import toast from "./modules/toast";
   import { wait } from "./modules/util";
   import { SCREEN_FADE_DURATION } from "./modules/constants";
-  import { onMount } from "svelte";
+  import { onMount, onDestroy } from "svelte";
+
+  let unsubscribe;
 
   onMount(() => {
-    screenStore.subscribe((value) => {
+    unsubscribe = screenStore.subscribe((value) => {
       screen = undefined;
       toast.clear();
       wait(SCREEN_FADE_DURATION, () => {
@@ -21,6 +23,8 @@
       });
     });
   });
+
+  onDestroy(unsubscribe);
 
   let screen;
 </script>

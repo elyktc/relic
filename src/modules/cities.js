@@ -4,13 +4,15 @@ import { v4 as uuid } from "uuid";
 
 let cities = new Map();
 
+function City(name, innCost) {
+  this.name = name;
+  this.innCost = innCost;
+}
+
 function createCity() {
   let name = uuid().substring(0, 8);
   let innCost = rand(INN_MIN, INN_MAX);
-  return {
-    name,
-    innCost,
-  };
+  return new City(name, innCost);
 }
 
 export function getCity(x, y) {
