@@ -2,22 +2,22 @@
   import Toast from "./Toast.svelte";
   import user from "../../modules/user";
   import enc from "../../modules/enc";
-  import { ENC_OUT_DURATION } from "../../modules/constants";
+  import { BLUR_DURATION, FLY_DURATION } from "../../modules/constants";
   import { fly, blur } from "svelte/transition";
 
   const userFlyOptions = {
     x: 40,
-    duration: 200,
+    duration: FLY_DURATION,
   };
 
   const encFlyOptions = {
     x: -40,
-    duration: 200,
+    duration: FLY_DURATION,
   };
 
   const blurOptions = {
     amount: 40,
-    duration: ENC_OUT_DURATION,
+    duration: BLUR_DURATION,
   };
 
   function out(node, won, lost, flyOptions, prevent) {

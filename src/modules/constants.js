@@ -1,16 +1,17 @@
-export const USER_STAT_POOL = 20;
+export const USER_STAT_POOL = 10;
 
-export const USER_HP_MIN = 50;
-export const USER_STR_MIN = 4;
-export const USER_DEX_MIN = 4;
+export const USER_HP_MIN = 60;
+export const USER_STR_MIN = 6;
+export const USER_DEX_MIN = 6;
 
-export const ENC_HP_MIN = 10;
+export const ENC_HP_MIN = 20;
 export const ENC_STR_MIN = 2;
 export const ENC_DEX_MIN = 2;
 export const ENC_GP_MAX = 50;
 
 export const HP_METER_DURATION = 200;
-export const ENC_OUT_DURATION = 500;
+export const BLUR_DURATION = 500;
+export const FLY_DURATION = 200;
 export const BATTLE_SPEED = 1;
 export const USER_SPEED = 1000;
 export const HIT_LUCK = 1;

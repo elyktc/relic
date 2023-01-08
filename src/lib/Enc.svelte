@@ -18,7 +18,7 @@
   } from "../modules/battle";
   import toast from "../modules/toast";
   import { rand, wait, vary } from "../modules/util";
-  import { ENC_OUT_DURATION } from "../modules/constants";
+  import { BLUR_DURATION, FLY_DURATION } from "../modules/constants";
   import { onMount } from "svelte";
 
   function handleKeydown(e) {
@@ -33,9 +33,9 @@
         if (engaged) {
           userFlee();
         } else if (victory && canProceed) {
-          showMapScreen();
+          proceed();
         } else if (gameover && canProceed) {
-          showTitleScreen();
+          reset();
         }
         break;
     }
@@ -95,7 +95,7 @@
     victory = true;
     waitSign.cancel();
     canFight = false;
-    wait(ENC_OUT_DURATION, () => {
+    wait(BLUR_DURATION, () => {
       canProceed = true;
       loot();
     });
@@ -105,7 +105,7 @@
     gameover = true;
     waitSign.cancel();
     canFight = false;
-    wait(ENC_OUT_DURATION, () => {
+    wait(BLUR_DURATION, () => {
       canProceed = true;
       toast.persist(`Game over`);
     });
@@ -132,6 +132,15 @@
     }
   }
 
+  function proceed() {
+    proceeding = true;
+    wait(FLY_DURATION, showMapScreen);
+  }
+
+  function reset() {
+    showTitleScreen();
+  }
+
   onMount(() => {
     initEnc();
     //toast.show(`Encountered a ${$enc.name}!`);
@@ -156,11 +165,11 @@
     return () => {
       waitSign?.cancel();
       clearTimeout(encTimeout);
-      encMisses.set(0);
-      $user.status.fleeing = false;
-      $enc.status.fleeing = false;
       unsub_enc();
       unsub_user();
+      encMisses.set(0);
+      $user.status.fleeing = false;
+      $enc = null;
     };
   });
 
@@ -168,6 +177,7 @@
   let userSpeed;
   let canFight;
   let canProceed;
+  let proceeding;
   let victory;
   let gameover;
   let waitSign;
@@ -178,7 +188,7 @@
 
 <div transition:screenFade>
   <div class="view field">
-    {#if $enc}
+    {#if $enc && !proceeding}
       <EncImgs />
       <EncInfo />
     {/if}
@@ -193,9 +203,9 @@
       {#if engaged}
         <button on:click={userFlee}>Flee</button>
       {:else if victory && canProceed}
-        <button on:click={showMapScreen}>Proceed</button>
+        <button on:click={proceed}>Proceed</button>
       {:else if gameover && canProceed}
-        <button on:click={showTitleScreen}>Reset</button>
+        <button on:click={reset}>Reset</button>
       {/if}
     </div>
   {/if}

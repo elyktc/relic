@@ -4,6 +4,7 @@
   import { HP_METER_DURATION } from "../../modules/constants";
   import { tweened } from "svelte/motion";
   import { cubicOut } from "svelte/easing";
+  import { fade } from "svelte/transition";
 
   const hpMeter = tweened(0, {
     duration: HP_METER_DURATION,
@@ -22,14 +23,14 @@
 <div class="row info">
   <div class="col user">
     {#if !$user.ko() && !$user.fleeing()}
-      <progress value={$hpMeter} />
+      <progress value={$hpMeter} out:fade={{ duration: 100 }} />
     {:else}
       <div />
     {/if}
   </div>
   <div class="col enc">
     {#if !$enc.ko() && !$enc.fleeing()}
-      <progress value={$encHpMeter} />
+      <progress value={$encHpMeter} out:fade={{ duration: 100 }} />
     {:else}
       <div />
     {/if}
