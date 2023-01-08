@@ -5,8 +5,7 @@
     showCityScreen,
     screenFade,
   } from "../modules/screens";
-  import map, { TERRAINS, init as initMap } from "../modules/map";
-  import user from "../modules/user";
+  import map, { TERRAINS, steps, init as initMap } from "../modules/map";
   import { clearCities } from "../modules/cities";
   import { rand } from "../modules/util";
   import { ENCFREQ } from "../modules/constants";
@@ -25,7 +24,7 @@
 
   function move(p) {
     if (map.move(p)) {
-      $user.steps++;
+      $steps++;
       drawMap(map.miniMap());
       let t = map.location().terrain;
       if (t == TERRAINS.CITY) {
@@ -37,7 +36,7 @@
   }
 
   onMount(() => {
-    if (!$user.steps) {
+    if (!$steps) {
       initMap();
       clearCities();
     }

@@ -6,6 +6,7 @@ import {
   MINIMAPSIZE,
   STARTING_SIZE,
 } from "./constants";
+import { writable } from "svelte/store";
 
 let matrix;
 let posX;
@@ -242,5 +243,7 @@ export const TERRAINS = {
   FOREST,
   CITY,
 };
+
+export const steps = writable(0);
 
 export default { miniMap, location, move, getExplored };

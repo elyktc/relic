@@ -4,10 +4,6 @@
   import enc from "../../modules/enc";
   import { ENC_OUT_DURATION } from "../../modules/constants";
   import { fly, blur } from "svelte/transition";
-  import { getContext } from "svelte";
-
-  const userRan = getContext("userRan");
-  const encRan = getContext("encRan");
 
   const userFlyOptions = {
     x: 40,
@@ -49,7 +45,7 @@
       $user.ko(),
       $enc.ko(),
       encFlyOptions,
-      $user.ko() || $userRan
+      $user.ko() || $user.fleeing()
     );
   }
 </script>
@@ -57,7 +53,7 @@
 <div class="row imgs">
   <div class="row">
     <div class="col user img">
-      {#if !$user.ko() && !$userRan}
+      {#if !$user.ko() && !$user.fleeing()}
         <div
           class="icon map-u"
           class:rejoice={$enc.ko()}
@@ -76,7 +72,7 @@
     <div class="col toast">
       <Toast target="enc" type={2} />
     </div>
-    {#if !$enc.ko() && !$encRan}
+    {#if !$enc.ko() && !$enc.fleeing()}
       <div class="col enc img">
         <div
           class="icon dragon"

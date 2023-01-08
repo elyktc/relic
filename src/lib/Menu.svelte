@@ -4,8 +4,8 @@
     screenFade,
     showTitleScreen,
   } from "../modules/screens";
-  import map from "../modules/map";
-  import user from "../modules/user";
+  import map, { steps } from "../modules/map";
+  import user, { nextXp } from "../modules/user";
   import { format } from "../modules/util";
 
   function handleKeydown(e) {
@@ -38,7 +38,7 @@
     <div class="row">
       <div class="col label">Next level at</div>
       <div class="col value">
-        {$user.next}
+        {nextXp()}
       </div>
     </div>
     <div class="row" style:margin-top="20px">
@@ -68,7 +68,7 @@
     <div class="row">
       <div class="col label">Steps</div>
       <div class="col value">
-        {format($user.steps)}
+        {format($steps)}
       </div>
     </div>
     <div class="row">

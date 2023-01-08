@@ -11,9 +11,9 @@ export const ENC_GP_MAX = 50;
 
 export const HP_METER_DURATION = 200;
 export const ENC_OUT_DURATION = 500;
-export const BATTLE_SPEED = 2;
+export const BATTLE_SPEED = .5;
 export const USER_SPEED = 1000;
-export const HIT_LUCK = 2;
+export const HIT_LUCK = 1;
 
 export const STARTING_SIZE = 7;
 export const MINIMAPSIZE = 9;
@@ -27,4 +27,4 @@ export const SCREEN_FADE_DURATION = 200;
 export const VARIANCE = 0.1;
 
 export const INN_MIN = 5;
-export const INN_MAX = 100;
+export const INN_MAX = 50;

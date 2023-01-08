@@ -1,6 +1,7 @@
 <script>
   import { showMapScreen, screenFade } from "../modules/screens";
   import user, { init as initUser } from "../modules/user";
+  import { steps } from "../modules/map";
   import { onMount } from "svelte";
 
   function handleKeydown(e) {
@@ -13,6 +14,7 @@
 
   onMount(() => {
     initUser();
+    $steps = 0;
   });
 </script>
 
@@ -20,9 +22,9 @@
   <div class="view col">
     <h1 style:margin-right="50px">Relic</h1>
     <p style:margin-left="100px">by elyktc</p>
-    <div class="row">
+    <!-- <div class="row">
       <input bind:value={$user.name} maxlength="8" style:display="none" />
-    </div>
+    </div> -->
   </div>
   <div class="ctrls">
     <button on:click={showMapScreen}>Start</button>
@@ -37,12 +39,5 @@
 
   h1 {
     text-shadow: 1px 2px 10px teal;
-  }
-
-  input {
-    font-size: 28px;
-    height: 50px;
-    width: 150px;
-    padding-left: 15px;
   }
 </style>

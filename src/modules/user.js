@@ -1,67 +1,35 @@
-import { rand, vary } from "./util";
-import {
-  USER_HP_MIN,
-  USER_STR_MIN,
-  USER_DEX_MIN,
-  USER_STAT_POOL,
-} from "./constants";
+import { Player, getStats } from "./player";
+import { USER_HP_MIN, USER_STR_MIN, USER_DEX_MIN } from "./constants";
 import { v4 as uuid } from "uuid";
-import { writable } from "svelte/store";
-
-function getStats() {
-  let pool = USER_STAT_POOL;
-  let hp = rand(pool);
-  pool -= hp;
-  let str = rand(pool);
-  pool -= str;
-  let dex = pool;
-
-  return {
-    hp,
-    str,
-    dex,
-  };
-}
+import { writable, get } from "svelte/store";
 
 function createUser() {
   let name = ""; //uuid().substring(0, 8);
+  let lvl = 1;
 
   var stats = getStats();
   let hp = stats.hp + USER_HP_MIN;
   let str = stats.str + USER_STR_MIN;
-  let dex = stats.dex + USER_DEX_MIN;
-  let maxhp = hp;
-  let steps = 0;
+  let dex = 20; //stats.dex + USER_DEX_MIN;
   let gp = 0;
   let xp = 0;
-  let lvl = 1;
-  let next = vary((maxhp + stats.str + stats.dex) * 2);
 
-  return {
-    name,
-    hp,
-    maxhp,
-    str,
-    dex,
-    steps,
-    gp,
-    lvl,
-    xp,
-    next,
-    ko() {
-      return this.hp <= 0;
-    },
-  };
+  return new Player(name, lvl, hp, str, dex, xp, gp);
 }
 
-export function levelUp(u) {
+export function nextXp() {
+  let u = get(user);
+  return Math.pow(u.lvl, 3) + u.lvl * 200 + -1;
+}
+
+export function levelUp() {
+  let u = get(user);
+  u.lvl++;
   let stats = getStats();
   u.maxhp += stats.hp;
   u.hp = u.maxhp;
   u.str += stats.str;
   u.dex += stats.dex;
-  u.next += vary((u.maxhp + u.str + u.dex) * 2);
-  u.lvl++;
   user.set(u);
 }
 
@@ -69,6 +37,6 @@ export function init() {
   user.set(createUser());
 }
 
-const user = writable(createUser());
+const user = writable();
 
 export default user;

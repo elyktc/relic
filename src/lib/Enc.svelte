@@ -7,21 +7,19 @@
     screenFade,
     showTitleScreen,
   } from "../modules/screens";
-  import user, { levelUp } from "../modules/user";
+  import user, { levelUp, nextXp } from "../modules/user";
   import enc, { init as initEnc } from "../modules/enc";
-  import { getEncSpeed, getUserSpeed, hit } from "..//modules/battle";
+  import {
+    getEncSpeed,
+    getUserSpeed,
+    userHit,
+    encHit,
+    encMisses,
+  } from "../modules/battle";
   import toast from "../modules/toast";
   import { rand, wait, vary } from "../modules/util";
   import { ENC_OUT_DURATION } from "../modules/constants";
   import { onMount } from "svelte";
-  import { setContext } from "svelte";
-  import { writable } from "svelte/store";
-
-  const userRan = writable(false);
-  const encRan = writable(false);
-
-  setContext("userRan", userRan);
-  setContext("encRan", encRan);
 
   function handleKeydown(e) {
     switch (e.key) {
@@ -32,8 +30,8 @@
         block();
         break;
       case "q":
-        if (!victory && !gameover && !$userRan && !$encRan) {
-          userRun();
+        if (engaged) {
+          userFlee();
         } else if (victory && canProceed) {
           showMapScreen();
         } else if (gameover && canProceed) {
@@ -44,12 +42,14 @@
   }
 
   function userWait() {
-    userSpeed = vary(getUserSpeed());
-    waitSign.start(userSpeed);
+    if (engaged) {
+      userSpeed = vary(getUserSpeed());
+      waitSign.start(userSpeed);
+    }
   }
 
   function userTurn() {
-    if (!victory && !gameover) {
+    if (engaged) {
       canFight = true;
     }
   }
@@ -59,29 +59,23 @@
       return;
     }
     canFight = false;
-    blocking = false;
-    let dmg = hit($user, $enc);
-    $enc.hp -= dmg ?? 0;
-    toast.show(dmgMsg(dmg), "enc");
-    if ($enc.ko()) {
-      win();
-    } else {
-      userWait();
-    }
+    $user.status.blocking = false;
+    userHit();
+    setTimeout(userWait, 1);
   }
 
   function block() {
     if (!canFight) {
       return;
     }
-    blocking = true;
     canFight = false;
+    $user.block();
     userWait();
   }
 
-  function userRun() {
+  function userFlee() {
     waitSign.cancel();
-    $userRan = true;
+    $user.flee();
     var drop = rand(Math.min($user.gp / 2, $enc.gp));
     $user.gp -= drop;
     if (drop) {
@@ -91,39 +85,15 @@
   }
 
   function encTurn() {
-    if (!victory && !gameover && !$userRan && !exited) {
-      let dmg = hit($enc, $user);
-      if (dmg && blocking) {
-        dmg = Math.ceil(dmg / 4);
-      }
-      $user.hp -= dmg ?? 0;
-      toast.show(dmgMsg(dmg), "user");
-      if (!dmg) {
-        encMisses++;
-      } else {
-        encMisses = 0;
-      }
-      if ($user.ko()) {
-        lose();
-      } else {
-        if (encMisses > 3 && rand(1) == 1) {
-          wait(500, encRun);
-        } else {
-          wait(vary(encSpeed), encTurn);
-        }
-      }
+    if (engaged) {
+      encHit();
+      encTimeout = wait(vary(encSpeed), encTurn);
     }
   }
 
-  function encRun() {
-    $encRan = true;
-    toast.show("Escaped");
-    win();
-  }
-
   function win() {
-    waitSign.cancel();
     victory = true;
+    waitSign.cancel();
     canFight = false;
     wait(ENC_OUT_DURATION, () => {
       canProceed = true;
@@ -132,8 +102,8 @@
   }
 
   function lose() {
-    waitSign.cancel();
     gameover = true;
+    waitSign.cancel();
     canFight = false;
     wait(ENC_OUT_DURATION, () => {
       canProceed = true;
@@ -143,19 +113,20 @@
 
   function loot() {
     let xp = $enc.xp;
-    if ($encRan) {
+    let next = nextXp();
+    if ($enc.fleeing()) {
       xp *= 1 - $enc.hp / $enc.maxhp;
-      xp = Math.floor(Math.min(xp, $user.next - $user.xp - 1));
+      xp = Math.floor(Math.min(xp, next - $user.xp - 1));
     }
     if (xp) {
       $user.xp += xp;
       toast.persist(`Gained ${xp} experience`, "enc");
     }
-    if ($user.xp >= $user.next) {
-      levelUp($user);
+    if ($user.xp >= next) {
+      levelUp();
       toast.persist(`Level up!`, "enc");
     }
-    if ($enc.gp && !$encRan) {
+    if ($enc.gp && !$enc.fleeing()) {
       $user.gp += $enc.gp;
       toast.persist(`Found ${$enc.gp} gold`, "enc");
     }
@@ -166,15 +137,32 @@
     //toast.show(`Encountered a ${$enc.name}!`);
     encSpeed = getEncSpeed($enc.dex, $user.dex);
     userSpeed = getUserSpeed();
-    wait(rand(encSpeed), encTurn);
+
+    const unsub_user = user.subscribe((u) => {
+      if (u?.ko()) {
+        lose();
+      }
+    });
+
+    const unsub_enc = enc.subscribe((e) => {
+      if (e?.ko() || e?.fleeing()) {
+        win();
+      }
+    });
+
+    encTimeout = wait(rand(encSpeed), encTurn);
     waitSign.start(userSpeed);
+
     return () => {
       waitSign?.cancel();
-      exited = true;
+      clearTimeout(encTimeout);
+      encMisses.set(0);
+      $user.status.fleeing = false;
+      $enc.status.fleeing = false;
+      unsub_enc();
+      unsub_user();
     };
   });
-
-  const dmgMsg = (dmg) => (dmg == undefined ? "Miss" : `${dmg}`);
 
   let encSpeed;
   let userSpeed;
@@ -182,26 +170,32 @@
   let canProceed;
   let victory;
   let gameover;
-  let blocking;
-  let exited;
   let waitSign;
-  let encMisses = 0;
+  let encTimeout;
+
+  // function calcEngaged(){
+  //   return !victory && !gameover && !$user.fleeing() && !$enc?.fleeing();
+  // }
+
+  $: engaged = !victory && !gameover && !$user.fleeing() && !$enc?.fleeing();
 </script>
 
 <div transition:screenFade>
   <div class="view field">
-    <EncImgs />
-    <EncInfo />
+    {#if $enc}
+      <EncImgs />
+      <EncInfo />
+    {/if}
   </div>
-  {#if !$userRan}
+  {#if !$user.fleeing()}
     <div class="ctrls col">
       <div>
         <button disabled={!canFight} on:click={fight}>Fight</button>
         <button disabled={!canFight} on:click={block}>Block</button>
         <WaitCircle bind:this={waitSign} on:ready={userTurn} />
       </div>
-      {#if !victory && !gameover && !$userRan && !$encRan}
-        <button on:click={userRun}>Run</button>
+      {#if engaged}
+        <button on:click={userFlee}>Flee</button>
       {:else if victory && canProceed}
         <button on:click={showMapScreen}>Proceed</button>
       {:else if gameover && canProceed}
