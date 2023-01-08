@@ -10,7 +10,7 @@ function createUser() {
   var stats = getStats();
   let hp = stats.hp + USER_HP_MIN;
   let str = stats.str + USER_STR_MIN;
-  let dex = 20; //stats.dex + USER_DEX_MIN;
+  let dex = stats.dex + USER_DEX_MIN;
   let gp = 0;
   let xp = 0;
 

@@ -11,7 +11,7 @@ function createEnc() {
   let stats = getStats();
   let hp = stats.hp + ENC_HP_MIN;
   let str = stats.str + ENC_STR_MIN;
-  let dex = 1; //stats.dex + ENC_DEX_MIN;
+  let dex = stats.dex + ENC_DEX_MIN;
   let gp = rand(ENC_GP_MAX);
   let xp = Math.ceil(vary(hp + str + dex) / 2);
 

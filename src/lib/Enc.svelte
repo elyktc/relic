@@ -173,10 +173,6 @@
   let waitSign;
   let encTimeout;
 
-  // function calcEngaged(){
-  //   return !victory && !gameover && !$user.fleeing() && !$enc?.fleeing();
-  // }
-
   $: engaged = !victory && !gameover && !$user.fleeing() && !$enc?.fleeing();
 </script>
 
