@@ -44,7 +44,7 @@
     <div class="row" style:margin-top="20px">
       <div class="col label">Health</div>
       <div class="col value">
-        {$user.hp} / {$user.maxhp}
+        {$user.hp} / {$user.hpbase}
       </div>
     </div>
     <div class="row">
@@ -62,7 +62,7 @@
     <div class="row" style:margin="10px 0">
       <div class="col label">Gold</div>
       <div class="col value">
-        {$user.gp}
+        {format($user.gp)}
       </div>
     </div>
     <div class="row">

@@ -1,4 +1,5 @@
 import { VARIANCE } from "./constants";
+import { get } from "svelte/store";
 
 export function rand(max, min) {
   max ??= 0;
@@ -18,4 +19,8 @@ export function vary(amount, pct) {
 
 export function format(number) {
   return new Intl.NumberFormat().format(number);
+}
+
+export function increment(store) {
+  store.set(get(store) + 1);
 }

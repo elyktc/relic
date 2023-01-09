@@ -5,7 +5,7 @@
   import { onMount } from "svelte";
 
   onMount(() => {
-    $user.hp = $user.maxhp;
+    $user.hp = $user.hpbase;
     wait(2000, showMapScreen);
   });
 </script>

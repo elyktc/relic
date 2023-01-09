@@ -1,59 +1,76 @@
-import user from "./user";
-import enc from "./enc";
+import user, { strikes, evades, kills, nextXp, levelUp } from "./user";
+import enc, { misses } from "./enc";
 import toast from "./toast";
-import { rand, vary } from "./util";
+import { rand, vary, increment } from "./util";
 import { HIT_LUCK, BATTLE_SPEED, USER_SPEED } from "./constants";
-import { writable, get } from "svelte/store";
+import { get } from "svelte/store";
 
-function hit(src, target) {
-  let hitPct;
-  if (src.dex > target.dex) {
-    hitPct = 1 - target.dex / src.dex;
-  } else {
-    hitPct = src.dex / target.dex;
+function strike(src, target) {
+  let hitPct = src.dex / (src.dex + target.dex);
+  if (target.evading()) {
+    hitPct = hitPct / 4;
   }
   hitPct = Math.ceil(hitPct * 100);
   if (rand(100) * HIT_LUCK < hitPct) {
     let dmg = vary(src.str);
-    if (target.blocking()) {
-      dmg = Math.ceil(dmg / 4);
-    }
     return dmg;
   }
   return undefined;
 }
 
-export function userHit() {
+export function userStrike() {
   let u = get(user);
+  if (u.evading()) {
+    u.status.evading = false;
+    user.set(u);
+  }
   let e = get(enc);
-  let dmg = hit(u, e);
+  let dmg = strike(u, e);
   if (dmg) {
     e.hp -= dmg;
     enc.set(e);
-  } else if (dmg === undefined) {
-    user.set(u);
+    increment(strikes);
+    if (e.ko()) {
+      increment(kills);
+    }
   }
   toast.show(dmgMsg(dmg), "enc");
 }
 
-export function encHit() {
+export function userEvade() {
   let u = get(user);
+  u.status.evading = true;
+  user.set(u);
+}
+
+export function userFlee() {
+  let u = get(user);
+  u.status.fleeing = true;
+  var drop = rand(Math.floor(u.gp / 2));
+  u.gp -= drop;
+  if (drop) {
+    toast.show(`Dropped ${drop} gold`);
+  }
+  user.set(u);
+}
+
+export function encStrike() {
   let e = get(enc);
-  let misses = get(encMisses);
-  if (misses > 3 && rand(1) == 1) {
-    e.flee();
+  if (get(misses) > 3 && rand(1) == 1) {
+    e.status.fleeing = true;
     enc.set(e);
   } else {
-    let dmg = hit(e, u);
+    let u = get(user);
+    let dmg = strike(e, u);
     if (dmg) {
       u.hp -= dmg;
       user.set(u);
-      if (misses) {
-        encMisses.set(0);
-      }
+      misses.set(0);
     } else if (dmg === undefined) {
-      encMisses.set(++misses);
-      enc.set(e);
+      increment(misses);
+      if (u.evading()) {
+        increment(evades);
+      }
     }
     toast.show(dmgMsg(dmg), "user");
   }
@@ -67,6 +84,29 @@ export function getUserSpeed() {
   return USER_SPEED * BATTLE_SPEED;
 }
 
-export const encMisses = writable(0);
+export function loot() {
+  let u = get(user);
+  let e = get(enc);
+  let xp = e.xp;
+  let next = nextXp();
+  if (e.fleeing()) {
+    xp *= 1 - e.hp / e.hpbase;
+    xp = Math.floor(Math.min(xp, next - u.xp - 1));
+  }
+  xp = Math.ceil((xp * e.lvl) / u.lvl);
+  if (xp) {
+    u.xp += xp;
+    toast.persist(`Gained ${xp} experience`, "enc");
+  }
+  if (e.gp && !e.fleeing()) {
+    u.gp += e.gp;
+    toast.persist(`Found ${e.gp} gold`, "enc");
+  }
+  user.set(u);
+  if (u.xp >= next) {
+    levelUp();
+    toast.persist(`Level up!`, "enc");
+  }
+}
 
 const dmgMsg = (dmg) => (dmg === undefined ? "Miss" : `${dmg}`);

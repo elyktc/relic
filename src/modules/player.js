@@ -5,34 +5,42 @@ export class Player {
   constructor(name, lvl, hp, str, dex, xp, gp) {
     this.name = name;
     this.lvl = lvl;
-    this.maxhp = hp;
+    this.hpbase = hp;
+    this.strbase = str;
+    this.dexbase = dex;
     this.hp = hp;
     this.str = str;
     this.dex = dex;
     this.xp = xp;
     this.gp = gp;
     this.status = {
-      blocking: false,
+      evading: false,
       fleeing: false,
     };
   }
 
-  block = () => (this.status.blocking = true);
-  flee = () => (this.status.fleeing = true);
-
-  blocking = () => this.status.blocking;
+  evading = () => this.status.evading;
   fleeing = () => this.status.fleeing;
 
   ko = () => this.hp <= 0;
 }
 
-export function getStats() {
-  let pool = USER_STAT_POOL;
-  let hp = rand(pool);
-  pool -= hp;
-  let str = rand(pool);
+export function getStats(pool, strWeight, dexWeight) {
+  pool ??= 10;
+  strWeight ??= 1;
+  dexWeight ??= 1;
+
+  let strPool = Math.round((pool * strWeight) / (strWeight + dexWeight));
+  let dexPool = Math.round((pool * dexWeight) / (strWeight + dexWeight));
+  let strMin = Math.min(Math.max(strPool - dexPool, 0), strPool - 1);
+  let dexMin = Math.min(Math.max(dexPool - strPool, 0), dexPool - 1);
+
+  let str = rand(strPool, strMin);
   pool -= str;
-  let dex = pool;
+  let dex = rand(dexPool, dexMin);
+  pool -= dex;
+  let hp = Math.max(pool, 0);
+
   return {
     hp,
     str,

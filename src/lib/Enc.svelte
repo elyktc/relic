@@ -7,14 +7,16 @@
     screenFade,
     showTitleScreen,
   } from "../modules/screens";
-  import user, { levelUp, nextXp } from "../modules/user";
+  import user from "../modules/user";
   import enc, { init as initEnc } from "../modules/enc";
   import {
     getEncSpeed,
     getUserSpeed,
-    userHit,
-    encHit,
-    encMisses,
+    userStrike,
+    userEvade,
+    userFlee,
+    encStrike,
+    loot,
   } from "../modules/battle";
   import toast from "../modules/toast";
   import { rand, wait, vary } from "../modules/util";
@@ -24,14 +26,14 @@
   function handleKeydown(e) {
     switch (e.key) {
       case "f":
-        fight();
+        strike();
         break;
       case "v":
-        block();
+        evade();
         break;
       case "q":
         if (engaged) {
-          userFlee();
+          flee();
         } else if (victory && canProceed) {
           proceed();
         } else if (gameover && canProceed) {
@@ -50,43 +52,37 @@
 
   function userTurn() {
     if (engaged) {
-      canFight = true;
+      canAct = true;
     }
   }
 
-  function fight() {
-    if (!canFight) {
+  function strike() {
+    if (!canAct) {
       return;
     }
-    canFight = false;
-    $user.status.blocking = false;
-    userHit();
+    canAct = false;
+    userStrike();
     setTimeout(userWait, 1);
   }
 
-  function block() {
-    if (!canFight) {
+  function evade() {
+    if (!canAct) {
       return;
     }
-    canFight = false;
-    $user.block();
-    userWait();
+    canAct = false;
+    userEvade();
+    setTimeout(userWait, 1);
   }
 
-  function userFlee() {
+  function flee() {
     waitSign.cancel();
-    $user.flee();
-    var drop = rand(Math.min($user.gp / 2, $enc.gp));
-    $user.gp -= drop;
-    if (drop) {
-      toast.show(`Dropped ${drop} gold`);
-    }
+    userFlee();
     wait(1000, showMapScreen);
   }
 
   function encTurn() {
     if (engaged) {
-      encHit();
+      encStrike();
       encTimeout = wait(vary(encSpeed), encTurn);
     }
   }
@@ -94,42 +90,21 @@
   function win() {
     victory = true;
     waitSign.cancel();
-    canFight = false;
+    canAct = false;
     wait(BLUR_DURATION, () => {
-      canProceed = true;
       loot();
+      canProceed = true;
     });
   }
 
   function lose() {
     gameover = true;
     waitSign.cancel();
-    canFight = false;
+    canAct = false;
     wait(BLUR_DURATION, () => {
-      canProceed = true;
       toast.persist(`Game over`);
+      canProceed = true;
     });
-  }
-
-  function loot() {
-    let xp = $enc.xp;
-    let next = nextXp();
-    if ($enc.fleeing()) {
-      xp *= 1 - $enc.hp / $enc.maxhp;
-      xp = Math.floor(Math.min(xp, next - $user.xp - 1));
-    }
-    if (xp) {
-      $user.xp += xp;
-      toast.persist(`Gained ${xp} experience`, "enc");
-    }
-    if ($user.xp >= next) {
-      levelUp();
-      toast.persist(`Level up!`, "enc");
-    }
-    if ($enc.gp && !$enc.fleeing()) {
-      $user.gp += $enc.gp;
-      toast.persist(`Found ${$enc.gp} gold`, "enc");
-    }
   }
 
   function proceed() {
@@ -167,7 +142,6 @@
       clearTimeout(encTimeout);
       unsub_enc();
       unsub_user();
-      encMisses.set(0);
       $user.status.fleeing = false;
       $enc = null;
     };
@@ -175,7 +149,7 @@
 
   let encSpeed;
   let userSpeed;
-  let canFight;
+  let canAct;
   let canProceed;
   let proceeding;
   let victory;
@@ -196,12 +170,12 @@
   {#if !$user.fleeing()}
     <div class="ctrls col">
       <div>
-        <button disabled={!canFight} on:click={fight}>Fight</button>
-        <button disabled={!canFight} on:click={block}>Block</button>
+        <button disabled={!canAct} on:click={strike}>Strike</button>
+        <button disabled={!canAct} on:click={evade}>Evade</button>
         <WaitCircle bind:this={waitSign} on:ready={userTurn} />
       </div>
       {#if engaged}
-        <button on:click={userFlee}>Flee</button>
+        <button on:click={flee}>Flee</button>
       {:else if victory && canProceed}
         <button on:click={proceed}>Proceed</button>
       {:else if gameover && canProceed}

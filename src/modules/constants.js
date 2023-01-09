@@ -1,6 +1,6 @@
 export const USER_STAT_POOL = 10;
 
-export const USER_HP_MIN = 60;
+export const USER_HP_MIN = 80;
 export const USER_STR_MIN = 6;
 export const USER_DEX_MIN = 6;
 

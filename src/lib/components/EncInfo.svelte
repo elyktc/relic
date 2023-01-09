@@ -16,8 +16,8 @@
     easing: cubicOut,
   });
 
-  $: if ($user.hp) hpMeter.set($user.hp / $user.maxhp);
-  $: if ($enc.hp) encHpMeter.set($enc.hp / $enc.maxhp);
+  $: if ($user.hp) hpMeter.set($user.hp / $user.hpbase);
+  $: if ($enc.hp) encHpMeter.set($enc.hp / $enc.hpbase);
 </script>
 
 <div class="row info">

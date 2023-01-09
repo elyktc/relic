@@ -1,10 +1,15 @@
 import { Player, getStats } from "./player";
-import { USER_HP_MIN, USER_STR_MIN, USER_DEX_MIN } from "./constants";
+import {
+  USER_HP_MIN,
+  USER_STR_MIN,
+  USER_DEX_MIN,
+  USER_STAT_POOL,
+} from "./constants";
 import { v4 as uuid } from "uuid";
 import { writable, get } from "svelte/store";
 
 function createUser() {
-  let name = ""; //uuid().substring(0, 8);
+  let name = "user"; //uuid().substring(0, 8);
   let lvl = 1;
 
   var stats = getStats();
@@ -17,25 +22,45 @@ function createUser() {
   return new Player(name, lvl, hp, str, dex, xp, gp);
 }
 
-export function nextXp() {
-  let u = get(user);
-  return Math.pow(u.lvl, 3) + u.lvl * 200 + -1;
+export function nextXp(u) {
+  u ??= get(user);
+  return Math.pow(u.lvl, 3) + u.lvl * 200 - 1;
 }
 
 export function levelUp() {
   let u = get(user);
-  u.lvl++;
-  let stats = getStats();
-  u.maxhp += stats.hp;
-  u.hp = u.maxhp;
-  u.str += stats.str;
-  u.dex += stats.dex;
+  let s = get(strikes);
+  let e = get(evades);
+  while (u.xp > nextXp(u)) {
+    u.lvl++;
+    let pool = Math.round(USER_STAT_POOL / 2);
+    let stats = getStats(pool, s, e);
+    u.hpbase += stats.hp + pool;
+    u.strbase = Math.max(u.strbase + stats.str, 1);
+    u.dexbase = Math.max(u.dexbase + stats.dex, 1);
+    s = undefined;
+    e = undefined;
+  }
+  u.hp = u.hpbase;
+  u.str = u.strbase;
+  u.dex = u.dexbase;
   user.set(u);
+  strikes.set(0);
+  evades.set(0);
 }
 
 export function init() {
-  user.set(createUser());
+  let u = createUser();
+  console.log(JSON.stringify(u));
+  user.set(u);
+  strikes.set(0);
+  evades.set(0);
+  kills.set(0);
 }
+
+export const strikes = writable(0);
+export const evades = writable(0);
+export const kills = writable(0);
 
 const user = writable();
 
