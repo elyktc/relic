@@ -132,11 +132,13 @@ function getCellTerrain(x, y) {
   if (matrix && matrix[x] && matrix[x][y]) return matrix[x][y];
 
   let terrain;
-  if (rand(CITYFREQ) == 1 && rand(CITYFREQ) < lastCityElapsed++) {
+  let r = rand(CITYFREQ * 2, CITYFREQ);
+  if (r < lastCityElapsed++ && r % CITYFREQ == 0) {
     terrain = CITY;
     lastCityElapsed = 0;
   } else {
     let surroundingTerrain = getSurroundingTerrain(x, y);
+    surroundingTerrain = surroundingTerrain.filter((t) => t !== CITY);
     let r = rand(surroundingTerrain.length + 1);
     if (r >= surroundingTerrain.length) {
       let terrains = [PLAIN, FOREST];
@@ -159,10 +161,12 @@ function getCellTerrain(x, y) {
 }
 
 function getSurroundingTerrain(x, y) {
+  x ??= posX;
+  y ??= posY;
   let surroundingTerrain = [];
   for (let x2 = x - 1; x2 <= x + 1; x2++) {
     for (let y2 = y - 1; y2 <= y + 1; y2++) {
-      if (matrix[x2] && matrix[x2][y2] && matrix[x2][y2] != CITY) {
+      if (matrix[x2] && matrix[x2][y2] && matrix[x2][y2]) {
         surroundingTerrain.push(matrix[x2][y2]);
       }
     }
@@ -227,6 +231,7 @@ function location() {
       y: posY - originY,
     },
     terrain: getCellTerrain(),
+    nearby: getSurroundingTerrain(),
     distance: distance(),
   };
 }

@@ -1,8 +1,13 @@
 <script>
   import Toast from "./Toast.svelte";
   import user from "../../modules/user";
-  import enc from "../../modules/enc";
-  import { BLUR_DURATION, FLY_DURATION } from "../../modules/constants";
+  import enc, { icon } from "../../modules/enc";
+  import {
+    BLUR_DURATION,
+    FLY_DURATION,
+    ENC_TOAST,
+    USER_TOAST,
+  } from "../../modules/constants";
   import { fly, blur } from "svelte/transition";
 
   const userFlyOptions = {
@@ -65,17 +70,17 @@
       {/if}
     </div>
     <div class="col toast">
-      <Toast target="user" type={2} />
+      <Toast target={USER_TOAST} type={2} />
     </div>
   </div>
   <div class="row">
     <div class="col toast">
-      <Toast target="enc" type={2} />
+      <Toast target={ENC_TOAST} type={2} />
     </div>
     {#if !$enc.ko() && !$enc.fleeing()}
       <div class="col enc img">
         <div
-          class="icon dragon"
+          class="icon {$icon}"
           class:rejoice={$user.ko()}
           in:fly={encFlyOptions}
           out:encOut

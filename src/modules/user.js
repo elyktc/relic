@@ -5,8 +5,8 @@ import {
   USER_DEX_MIN,
   USER_STAT_POOL,
 } from "./constants";
-import { v4 as uuid } from "uuid";
 import { writable, get } from "svelte/store";
+import { v4 as uuid } from "uuid";
 
 function createUser() {
   let name = "user"; //uuid().substring(0, 8);

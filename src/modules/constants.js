@@ -18,7 +18,7 @@ export const HIT_LUCK = 1;
 
 export const STARTING_SIZE = 7;
 export const MINIMAPSIZE = 9;
-export const LOS = 2;
+export const LOS = 3;
 export const PLAINWEIGHT = 2;
 export const CITYFREQ = 200;
 export const ENCFREQ = 10;
@@ -29,3 +29,6 @@ export const VARIANCE = 0.1;
 
 export const INN_MIN = 5;
 export const INN_MAX = 50;
+
+export const ENC_TOAST = "enc";
+export const USER_TOAST = "user";

@@ -46,6 +46,30 @@
   content: "\1f319";
 }
 
+.icon.rat::after {
+  content: "\1F400";
+}
+
+.icon.wolf::after {
+  content: "\1F43A";
+}
+
+.icon.boar::after {
+  content: "\1F417";
+}
+
+.icon.goblin::after {
+  content: "\1F47A";
+}
+
+.icon.fencer::after {
+  content: "\1F93A";
+}
+
+.icon.ghost::after {
+  content: "\1F47B";
+}
+
 .icon.dragon::after {
   content: "\1f409";
 }

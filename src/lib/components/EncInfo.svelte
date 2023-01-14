@@ -24,6 +24,7 @@
   <div class="col user">
     {#if !$user.ko() && !$user.fleeing()}
       <progress value={$hpMeter} out:fade={{ duration: 100 }} />
+      <span class="lvl">Level {$user.lvl}</span>
     {:else}
       <div />
     {/if}
@@ -31,6 +32,7 @@
   <div class="col enc">
     {#if !$enc.ko() && !$enc.fleeing()}
       <progress value={$encHpMeter} out:fade={{ duration: 100 }} />
+      <span class="lvl">Level {$enc.lvl}</span>
     {:else}
       <div />
     {/if}
@@ -50,5 +52,9 @@
     font-family: "Averia Libre";
     align-items: flex-start;
     margin-top: 20px;
+  }
+
+  .lvl {
+    font-size: 16px;
   }
 </style>

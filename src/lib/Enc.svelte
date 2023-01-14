@@ -8,20 +8,20 @@
     showTitleScreen,
   } from "../modules/screens";
   import user from "../modules/user";
-  import enc, { init as initEnc } from "../modules/enc";
+  import enc, { init as initEnc, act as encAct } from "../modules/enc";
   import {
     getEncSpeed,
     getUserSpeed,
     userStrike,
     userEvade,
     userFlee,
-    encStrike,
     loot,
   } from "../modules/battle";
   import toast from "../modules/toast";
   import { rand, wait, vary } from "../modules/util";
   import { BLUR_DURATION, FLY_DURATION } from "../modules/constants";
   import { onMount } from "svelte";
+  import { get } from "svelte/store";
 
   function handleKeydown(e) {
     switch (e.key) {
@@ -82,7 +82,7 @@
 
   function encTurn() {
     if (engaged) {
-      encStrike();
+      get(encAct)();
       encTimeout = wait(vary(encSpeed), encTurn);
     }
   }

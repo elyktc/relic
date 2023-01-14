@@ -2,11 +2,17 @@ import user, { strikes, evades, kills, nextXp, levelUp } from "./user";
 import enc, { misses } from "./enc";
 import toast from "./toast";
 import { rand, vary, increment } from "./util";
-import { HIT_LUCK, BATTLE_SPEED, USER_SPEED } from "./constants";
+import {
+  HIT_LUCK,
+  BATTLE_SPEED,
+  USER_SPEED,
+  ENC_TOAST,
+  USER_TOAST,
+} from "./constants";
 import { get } from "svelte/store";
 
-function strike(src, target) {
-  let hitPct = src.dex / (src.dex + target.dex);
+export function strike(src, target) {
+  let hitPct = src.dex / Math.max(src.dex + target.dex, 1);
   if (target.evading()) {
     hitPct = hitPct / 4;
   }
@@ -34,7 +40,7 @@ export function userStrike() {
       increment(kills);
     }
   }
-  toast.show(dmgMsg(dmg), "enc");
+  toast.show(dmgMsg(dmg), ENC_TOAST);
 }
 
 export function userEvade() {
@@ -54,30 +60,8 @@ export function userFlee() {
   user.set(u);
 }
 
-export function encStrike() {
-  let e = get(enc);
-  if (get(misses) > 3 && rand(1) == 1) {
-    e.status.fleeing = true;
-    enc.set(e);
-  } else {
-    let u = get(user);
-    let dmg = strike(e, u);
-    if (dmg) {
-      u.hp -= dmg;
-      user.set(u);
-      misses.set(0);
-    } else if (dmg === undefined) {
-      increment(misses);
-      if (u.evading()) {
-        increment(evades);
-      }
-    }
-    toast.show(dmgMsg(dmg), "user");
-  }
-}
-
 export function getEncSpeed(encDex, userDex) {
-  return Math.ceil((userDex / encDex) * 1000 * BATTLE_SPEED);
+  return Math.ceil((userDex / Math.max(encDex, 1)) * 1000 * BATTLE_SPEED);
 }
 
 export function getUserSpeed() {
@@ -96,17 +80,17 @@ export function loot() {
   xp = Math.ceil((xp * e.lvl) / u.lvl);
   if (xp) {
     u.xp += xp;
-    toast.persist(`Gained ${xp} experience`, "enc");
+    toast.persist(`Gained ${xp} experience`, ENC_TOAST);
   }
   if (e.gp && !e.fleeing()) {
     u.gp += e.gp;
-    toast.persist(`Found ${e.gp} gold`, "enc");
+    toast.persist(`Found ${e.gp} gold`, ENC_TOAST);
   }
   user.set(u);
   if (u.xp >= next) {
     levelUp();
-    toast.persist(`Level up!`, "enc");
+    toast.persist(`Level up!`, ENC_TOAST);
   }
 }
 
-const dmgMsg = (dmg) => (dmg === undefined ? "Miss" : `${dmg}`);
+export const dmgMsg = (dmg) => (dmg === undefined ? "Miss" : `${dmg}`);
