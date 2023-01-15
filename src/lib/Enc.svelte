@@ -2,6 +2,9 @@
   import EncImgs from "./components/EncImgs.svelte";
   import EncInfo from "./components/EncInfo.svelte";
   import WaitCircle from "./components/WaitCircle.svelte";
+  import Modal from "./components/Modal.svelte";
+  import Inventory from "./components/Inventory.svelte";
+  import { use, itemSelection } from "../modules/inventory";
   import {
     showMapScreen,
     screenFade,
@@ -30,6 +33,9 @@
         break;
       case "v":
         evade();
+        break;
+      case "e":
+        openInventory();
         break;
       case "q":
         if (engaged) {
@@ -72,6 +78,25 @@
     canAct = false;
     userEvade();
     setTimeout(userWait, 1);
+  }
+
+  function openInventory() {
+    if (!canAct) {
+      return;
+    }
+    modal.open();
+    if ($user.evading()) {
+      $user.status.evading = false;
+    }
+  }
+
+  function useItem(item) {
+    if (item && canAct) {
+      canAct = false;
+      setTimeout(() => use(item), 1);
+      setTimeout(userWait, 1);
+    }
+    modal.close();
   }
 
   function flee() {
@@ -133,6 +158,8 @@
       }
     });
 
+    const unsub_selection = itemSelection.subscribe(useItem);
+
     encTimeout = wait(rand(encSpeed), encTurn);
     waitSign.start(userSpeed);
 
@@ -141,6 +168,7 @@
       clearTimeout(encTimeout);
       unsub_enc();
       unsub_user();
+      unsub_selection();
       $user.status.fleeing = false;
       $user.status.evading = false;
       $enc = null;
@@ -156,6 +184,7 @@
   let gameover;
   let waitSign;
   let encTimeout;
+  let modal;
 
   $: engaged = !victory && !gameover && !$user.fleeing() && !$enc?.fleeing();
   $: canEvade = canAct && !$user.evading();
@@ -169,22 +198,26 @@
     {/if}
   </div>
   {#if !$user.fleeing()}
-    <div class="ctrls col">
-      <div>
+    <div class="ctrls">
+      <div class="row">
         <button disabled={!canAct} on:click={strike}>Strike</button>
         <button disabled={!canEvade} on:click={evade}>Counter</button>
+        <button disabled={!canAct} on:click={openInventory}>Items</button>
         <WaitCircle bind:this={waitSign} on:ready={userTurn} />
       </div>
-      {#if engaged}
-        <button on:click={flee}>Flee</button>
-      {:else if victory && canProceed}
-        <button on:click={proceed}>Proceed</button>
-      {:else if gameover && canProceed}
-        <button on:click={reset}>Reset</button>
-      {/if}
+      <div class="row">
+        {#if engaged}
+          <button on:click={flee}>Flee</button>
+        {:else if victory && canProceed}
+          <button on:click={proceed}>Proceed</button>
+        {:else if gameover && canProceed}
+          <button on:click={reset}>Reset</button>
+        {/if}
+      </div>
     </div>
   {/if}
 </div>
+<Modal bind:this={modal}><Inventory /></Modal>
 <svelte:window on:keydown={handleKeydown} />
 
 <style>

@@ -20,7 +20,7 @@
   $: if ($enc.hp) encHpMeter.set($enc.hp / $enc.hpbase);
 </script>
 
-<div class="row info">
+<div class="row info spaced">
   <div class="col user">
     {#if !$user.ko() && !$user.fleeing()}
       <progress value={$hpMeter} out:fade={{ duration: 100 }} />
@@ -48,7 +48,6 @@
   }
 
   .info {
-    justify-content: space-between;
     font-family: "Averia Libre";
     align-items: flex-start;
     margin-top: 20px;

@@ -45,6 +45,7 @@
 
 <style>
   .toast-wrapper-1 {
+    z-index: 9999;
     font-family: "Lato", Helvetica, Arial, sans-serif;
     font-size: 20px;
     position: relative;
@@ -65,6 +66,7 @@
   }
 
   .toast-wrapper-2 {
+    z-index: 9997;
     font-size: 18px;
     font-family: "Averia Libre";
     text-shadow: black 2px 0 8px;

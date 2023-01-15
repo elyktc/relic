@@ -13,8 +13,7 @@ export const BATTLE_SPEED = 1;
 export const USER_SPEED = 1000;
 export const HIT_LUCK = 1;
 
-export const INN_MIN = 5;
-export const INN_MAX = 50;
+export const INN_COST = 25;
 
 export const STARTING_SIZE = 7;
 export const MINIMAPSIZE = 9;

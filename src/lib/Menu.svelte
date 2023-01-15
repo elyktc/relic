@@ -1,4 +1,7 @@
 <script>
+  import Modal from "./components/Modal.svelte";
+  import Inventory from "./components/Inventory.svelte";
+  import { use, itemSelection } from "../modules/inventory";
   import {
     showMapScreen,
     screenFade,
@@ -7,17 +10,41 @@
   import map, { steps } from "../modules/map";
   import user, { nextXp } from "../modules/user";
   import { format } from "../modules/util";
+  import { onMount } from "svelte";
 
   function handleKeydown(e) {
     switch (e.key) {
+      case "e":
+        openInventory();
+        break;
       case "q":
         showMapScreen();
         break;
-      case "Escape":
+      case "p":
         showTitleScreen();
         break;
     }
   }
+
+  function openInventory() {
+    modal.open();
+  }
+
+  function useItem(item) {
+    if (item) {
+      modal.close();
+      use(item);
+    }
+  }
+
+  onMount(() => {
+    const unsub_selection = itemSelection.subscribe(useItem);
+    return () => {
+      unsub_selection();
+    };
+  });
+
+  let modal;
 </script>
 
 <div transition:screenFade>
@@ -85,22 +112,26 @@
     </div>
   </div>
   <div class="ctrls">
-    <button on:click={showTitleScreen} class="danger">Reset</button>
-    <button on:click={showMapScreen}>Back</button>
+    <div class="row">
+      <button on:click={openInventory}>Items</button>
+    </div>
+    <div class="row">
+      <button on:click={showTitleScreen} class="danger">Reset</button>
+      <button on:click={showMapScreen}>Back</button>
+    </div>
   </div>
 </div>
+<Modal bind:this={modal}><Inventory /></Modal>
 <svelte:window on:keydown={handleKeydown} />
 
 <style>
-  .view {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .row {
+  .view .row {
     justify-content: space-between;
     width: 240px;
+  }
+
+  .ctrls .row {
+    justify-content: center;
   }
 
   .label {

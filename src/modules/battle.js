@@ -1,7 +1,7 @@
 import user, { strikes, evades, kills, nextXp, levelUp } from "./user";
 import enc, { misses } from "./enc";
 import toast from "./toast";
-import { rand, vary, increment } from "./util";
+import { rand, vary, increment, update } from "./util";
 import {
   HIT_LUCK,
   BATTLE_SPEED,
@@ -74,9 +74,7 @@ export function userStrike() {
 }
 
 export function userEvade() {
-  let u = get(user);
-  u.status.evading = true;
-  user.set(u);
+  update(user, (u) => (u.status.evading = true));
 }
 
 export function userFlee() {

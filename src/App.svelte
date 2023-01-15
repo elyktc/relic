@@ -56,13 +56,9 @@
 
   :global(.ctrls) {
     margin-top: 20px;
-  }
-
-  :global(.ctrls button) {
-    width: 85px;
-    padding: 10px;
-    margin: 10px;
-    border-radius: 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   :global(.ctrls button[disabled]) {

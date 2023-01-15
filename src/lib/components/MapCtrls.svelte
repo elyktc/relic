@@ -47,17 +47,17 @@
 </script>
 
 <div class="ctrls">
-  <div>
+  <div class="row">
     <button on:click={moveNW}>NW</button>
     <button on:click={moveN}>N</button>
     <button on:click={moveNE}>NE</button>
   </div>
-  <div>
+  <div class="row">
     <button on:click={moveW}>W</button>
     <button on:click={showMenuScreen}>Menu</button>
     <button on:click={moveE}>E</button>
   </div>
-  <div>
+  <div class="row">
     <button on:click={moveSW}>SW</button>
     <button on:click={moveS}>S</button>
     <button on:click={moveSE}>SE</button>

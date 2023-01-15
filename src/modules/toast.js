@@ -1,7 +1,11 @@
 import { toast as sveltetoast } from "@zerodevx/svelte-toast";
 
-function show(message, target = undefined) {
+function show(message, target = undefined, green = false) {
   let options = target ? { target } : undefined;
+  if (green) {
+    options ??= options;
+    options.theme = { "--toastColor": "green" };
+  }
   sveltetoast.push(message, options);
 }
 

@@ -26,10 +26,16 @@
 .col {
   display: flex;
   align-items: center;
-  justify-content: center;
 }
 .col {
   flex-direction: column;
+  justify-content: center;
+}
+.row.center {
+  justify-content: center;
+}
+.row.spaced {
+  justify-content: space-between;
 }
 
 a {
@@ -63,15 +69,23 @@ h1 {
 }
 
 button {
-  border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
   background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
+  width: 85px;
+  margin: 10px;
+  border-radius: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+button,
+button span {
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
 }
 button:hover {
   border-color: white;

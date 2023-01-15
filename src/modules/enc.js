@@ -4,7 +4,7 @@ import map, { TERRAINS } from "./map";
 import * as dragon from "./encs/dragon";
 import * as ghost from "./encs/ghost";
 import * as rat from "./encs/rat";
-import { rand, vary } from "./util";
+import { rand, update, vary } from "./util";
 import {
   ENC_HP_MIN,
   ENC_DEX_MIN,
@@ -60,10 +60,8 @@ function defaultInit(lvl, icons, encAct) {
 }
 
 function defaultAct() {
-  let e = get(enc);
   if (get(misses) > 3 && rand(1) == 1) {
-    e.status.fleeing = true;
-    enc.set(e);
+    update(enc, (e) => (e.status.fleeing = true));
   } else {
     encStrike();
   }

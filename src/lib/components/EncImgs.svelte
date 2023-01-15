@@ -55,7 +55,7 @@
   }
 </script>
 
-<div class="row imgs">
+<div class="row imgs spaced">
   <div class="row">
     <div class="col user img">
       {#if !$user.ko() && !$user.fleeing()}
@@ -92,7 +92,6 @@
 
 <style>
   .imgs {
-    justify-content: space-between;
     margin-top: 100px;
   }
 
