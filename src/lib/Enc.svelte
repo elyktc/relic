@@ -118,7 +118,6 @@
 
   onMount(() => {
     initEnc();
-    //toast.show(`Encountered a ${$enc.name}!`);
     encSpeed = getEncSpeed($enc.dex, $user.dex);
     userSpeed = getUserSpeed();
 
@@ -143,6 +142,7 @@
       unsub_enc();
       unsub_user();
       $user.status.fleeing = false;
+      $user.status.evading = false;
       $enc = null;
     };
   });
@@ -158,6 +158,7 @@
   let encTimeout;
 
   $: engaged = !victory && !gameover && !$user.fleeing() && !$enc?.fleeing();
+  $: canEvade = canAct && !$user.evading();
 </script>
 
 <div transition:screenFade>
@@ -171,7 +172,7 @@
     <div class="ctrls col">
       <div>
         <button disabled={!canAct} on:click={strike}>Strike</button>
-        <button disabled={!canAct} on:click={evade}>Evade</button>
+        <button disabled={!canEvade} on:click={evade}>Counter</button>
         <WaitCircle bind:this={waitSign} on:ready={userTurn} />
       </div>
       {#if engaged}

@@ -1,19 +1,16 @@
 import { Player, getStats } from "./player";
-import user, { evades } from "./user";
-import { strike, dmgMsg } from "./battle";
+import { encStrike } from "./battle";
 import map, { TERRAINS } from "./map";
 import * as dragon from "./encs/dragon";
 import * as ghost from "./encs/ghost";
 import * as rat from "./encs/rat";
-import toast from "./toast";
-import { rand, vary, increment } from "./util";
+import { rand, vary } from "./util";
 import {
   ENC_HP_MIN,
   ENC_DEX_MIN,
   ENC_STR_MIN,
   ENC_GP_MAX,
-  USER_STAT_POOL,
-  USER_TOAST,
+  STAT_POOL,
 } from "./constants";
 import { writable, get } from "svelte/store";
 
@@ -31,12 +28,14 @@ export function init() {
   );
   if (encs.length) {
     encs[rand(encs.length - 1)].init(lvl);
-    console.log(JSON.stringify(get(enc)));
-    if (!get(act)) {
-      act.set(defaultAct);
-    }
-    misses.set(0);
+  } else {
+    rat.init(lvl);
   }
+  console.log(JSON.stringify(get(enc)));
+  if (!get(act)) {
+    act.set(defaultAct);
+  }
+  misses.set(0);
 }
 
 export const icon = writable();
@@ -48,7 +47,7 @@ export default enc;
 
 function defaultInit(lvl, icons, encAct) {
   let name = "enc";
-  let stats = getStats(USER_STAT_POOL * lvl);
+  let stats = getStats(STAT_POOL * lvl);
   let hp = stats.hp + ENC_HP_MIN;
   let str = stats.str + ENC_STR_MIN;
   let dex = stats.dex + ENC_DEX_MIN;
@@ -66,19 +65,7 @@ function defaultAct() {
     e.status.fleeing = true;
     enc.set(e);
   } else {
-    let u = get(user);
-    let dmg = strike(e, u);
-    if (dmg) {
-      u.hp -= dmg;
-      user.set(u);
-      misses.set(0);
-    } else if (dmg === undefined) {
-      increment(misses);
-      if (u.evading()) {
-        increment(evades);
-      }
-    }
-    toast.show(dmgMsg(dmg), USER_TOAST);
+    encStrike();
   }
 }
 
@@ -96,7 +83,7 @@ class EncInfo {
     this.terrains.includes(t) || this.near.filter((n) => ts.includes(n)).length;
 }
 
-let basicInit = (lvl) => defaultInit(lvl, ["wolf", "boar", "goblin"]);
+let basicInit = (lvl) => defaultInit(lvl, ["wolf", "boar"]);
 let fencerInit = (lvl) => defaultInit(lvl, ["fencer"]);
 let ghostInit = (lvl) => defaultInit(lvl, ["ghost"], ghost.act);
 

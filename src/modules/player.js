@@ -1,5 +1,4 @@
 import { rand } from "./util";
-import { USER_STAT_POOL } from "./constants";
 
 export class Player {
   constructor(name, lvl, hp, str, dex, xp, gp) {

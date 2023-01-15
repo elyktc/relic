@@ -58,10 +58,6 @@
   content: "\1F417";
 }
 
-.icon.goblin::after {
-  content: "\1F47A";
-}
-
 .icon.fencer::after {
   content: "\1F93A";
 }

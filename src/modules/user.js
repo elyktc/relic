@@ -3,7 +3,7 @@ import {
   USER_HP_MIN,
   USER_STR_MIN,
   USER_DEX_MIN,
-  USER_STAT_POOL,
+  STAT_POOL,
 } from "./constants";
 import { writable, get } from "svelte/store";
 import { v4 as uuid } from "uuid";
@@ -33,7 +33,7 @@ export function levelUp() {
   let e = get(evades);
   while (u.xp > nextXp(u)) {
     u.lvl++;
-    let pool = Math.round(USER_STAT_POOL / 2);
+    let pool = Math.round(STAT_POOL / 2);
     let stats = getStats(pool, s, e);
     u.hpbase += stats.hp + pool;
     u.strbase = Math.max(u.strbase + stats.str, 1);

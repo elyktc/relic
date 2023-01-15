@@ -23,13 +23,15 @@
   }
 
   function move(p) {
-    if (map.move(p)) {
+    if (canMove && map.move(p)) {
       $steps++;
       drawMap(map.miniMap());
       let t = map.location().terrain;
       if (t == TERRAINS.CITY) {
+        canMove = false;
         showCityScreen();
       } else if (rand(getEncFreq()) == 1) {
+        canMove = false;
         showEncScreen();
       }
     }
@@ -40,10 +42,12 @@
       initMap();
       clearCities();
     }
+    canMove = true;
     drawMap(map.miniMap());
   });
 
   let mapHtml = "";
+  let canMove;
 </script>
 
 <div transition:screenFade>

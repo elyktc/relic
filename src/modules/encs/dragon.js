@@ -1,21 +1,12 @@
 import { Player, getStats } from "../player";
-import user, { evades } from "../user";
-import enc, { act as encAct, icon, misses } from "../enc";
-import { strike, dmgMsg } from "../battle";
-import toast from "../toast";
-import { rand, vary, increment } from "../util";
-import {
-  ENC_HP_MIN,
-  ENC_STR_MIN,
-  ENC_GP_MAX,
-  USER_STAT_POOL,
-  USER_TOAST,
-} from "../constants";
-import { get } from "svelte/store";
+import enc, { act as encAct, icon } from "../enc";
+import { encStrike } from "../battle";
+import { rand, vary } from "../util";
+import { ENC_HP_MIN, ENC_STR_MIN, ENC_GP_MAX, STAT_POOL } from "../constants";
 
 export function init(lvl) {
-  let name = "enc"; //uuid().substring(0, 8);
-  let stats = getStats(USER_STAT_POOL * lvl);
+  let name = "enc";
+  let stats = getStats(STAT_POOL * lvl);
   let hp = stats.hp + ENC_HP_MIN * 3;
   let str = stats.str + ENC_STR_MIN * 2;
   let dex = Math.ceil(stats.dex / 2);
@@ -28,18 +19,5 @@ export function init(lvl) {
 }
 
 function act() {
-  let e = get(enc);
-  let u = get(user);
-  let dmg = strike(e, u);
-  if (dmg) {
-    u.hp -= dmg;
-    user.set(u);
-    misses.set(0);
-  } else if (dmg === undefined) {
-    increment(misses);
-    if (u.evading()) {
-      increment(evades);
-    }
-  }
-  toast.show(dmgMsg(dmg), USER_TOAST);
+  encStrike();
 }

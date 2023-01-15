@@ -11,17 +11,50 @@ import {
 } from "./constants";
 import { get } from "svelte/store";
 
-export function strike(src, target) {
-  let hitPct = src.dex / Math.max(src.dex + target.dex, 1);
+function getDmg(source, target) {
+  let hitPct = source.dex / Math.max(source.dex + target.dex, 1);
   if (target.evading()) {
-    hitPct = hitPct / 4;
+    hitPct = hitPct / 2;
   }
   hitPct = Math.ceil(hitPct * 100);
   if (rand(100) * HIT_LUCK < hitPct) {
-    let dmg = vary(src.str);
-    return dmg;
+    return vary(source.str);
   }
   return undefined;
+}
+
+function strike(s, t, sourceToast, targetToast) {
+  let source = get(s);
+  let target = get(t);
+  let dmg = getDmg(source, target);
+  if (dmg) {
+    target.hp -= dmg;
+    if (target.evading()) {
+      target.status.evading = false;
+    }
+    t.set(target);
+  } else if (dmg === undefined && target.evading()) {
+    let counterDmg = vary(Math.max(Math.floor(target.str / 2), 1));
+    source.hp -= counterDmg;
+    s.set(source);
+    toast.show(dmgMsg(counterDmg), sourceToast);
+  }
+  toast.show(dmgMsg(dmg), targetToast);
+  return dmg;
+}
+
+export function encStrike() {
+  let dmg = strike(enc, user, ENC_TOAST, USER_TOAST);
+  if (dmg) {
+    misses.set(0);
+  } else if (dmg === undefined) {
+    increment(misses);
+    let u = get(user);
+    if (u.evading()) {
+      increment(evades);
+    }
+  }
+  return dmg;
 }
 
 export function userStrike() {
@@ -30,17 +63,14 @@ export function userStrike() {
     u.status.evading = false;
     user.set(u);
   }
-  let e = get(enc);
-  let dmg = strike(u, e);
+  let dmg = strike(user, enc, USER_TOAST, ENC_TOAST);
   if (dmg) {
-    e.hp -= dmg;
-    enc.set(e);
     increment(strikes);
+    let e = get(enc);
     if (e.ko()) {
       increment(kills);
     }
   }
-  toast.show(dmgMsg(dmg), ENC_TOAST);
 }
 
 export function userEvade() {
@@ -93,4 +123,4 @@ export function loot() {
   }
 }
 
-export const dmgMsg = (dmg) => (dmg === undefined ? "Miss" : `${dmg}`);
+const dmgMsg = (dmg) => (dmg === undefined ? "Miss" : `${dmg}`);

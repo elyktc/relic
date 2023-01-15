@@ -1,11 +1,11 @@
 import { Player, getStats } from "../player";
 import enc, { act as encAct, icon } from "../enc";
 import { vary } from "../util";
-import { USER_STAT_POOL } from "../constants";
+import { STAT_POOL } from "../constants";
 
 export function init(lvl) {
-  let name = "enc"; //uuid().substring(0, 8);
-  let stats = getStats((USER_STAT_POOL / 2) * lvl);
+  let name = "enc";
+  let stats = getStats((STAT_POOL / 2) * lvl);
   let hp = stats.hp + 1;
   let str = stats.str + 1;
   let dex = stats.dex + 1;
